@@ -35,16 +35,21 @@ jobs:
           git clone --depth 1 --branch AC79NN_SDK_V1.2.1_2023-12-13 \
             https://gitee.com/Jieli-Tech/fw-AC79_AIoT_SDK.git "$HOME/fw-AC79_AIoT_SDK"
 
-      - name: Build firmware
+      - name: Build test firmware
         run: |
           cd upstream
-          ./build.sh --release 1.0.1
-          cp build/felucca-1.0.1.fwsc build/felucca-1.0.1-s49.fwsc
+          ./build.sh
 
       - name: Run Felucca host tests
         run: |
           cd upstream
           tests/run_tests.sh
+
+      - name: Build release firmware
+        run: |
+          cd upstream
+          ./build.sh --release 1.0.1
+          cp build/felucca-1.0.1.fwsc build/felucca-1.0.1-s49.fwsc
 
       - name: Upload installable firmware
         uses: actions/upload-artifact@v4
