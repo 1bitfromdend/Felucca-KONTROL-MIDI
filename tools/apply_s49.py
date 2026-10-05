@@ -23,9 +23,12 @@ s49_block = r'''/* Native Instruments Kontrol S49 MK3 direct-control map.
  *
  * Page 1: CC20..23 = current engine HOME knobs 1..4,
  *         CC24 ATK, CC25 REL, CC26 DLY, CC27 REV.
- * Page 2: CC28 DEC, CC29 SUS, CC30 DIST, CC31 CHOR,
- *         CC32 LEVEL, CC33 PAN, CC34 LFO RATE, CC35 GLIDE.
- * Page 3: CC36..43 = engine parameters E1..E8.
+ * Page 2: CC102 DEC, CC103 SUS, CC104 DIST, CC105 CHOR,
+ *         CC106 LEVEL, CC107 PAN, CC108 LFO RATE, CC109 GLIDE.
+ * Page 3: CC110..117 = engine parameters E1..E8.
+ *
+ * CC32..63 are intentionally avoided: they are the LSB half of standard
+ * 14-bit MIDI controllers; in particular CC38 is RPN Data Entry LSB.
  */
 static uint32_t s49_param_id(const track_t *t, uint32_t cc)
 {
@@ -36,10 +39,12 @@ static uint32_t s49_param_id(const track_t *t, uint32_t cc)
     };
     if (cc >= 20u && cc <= 23u)
         return ENGINES[eng_idx(t->eng_req)]->knob[cc - 20u];
-    if (cc >= 24u && cc <= 35u)
+    if (cc >= 24u && cc <= 27u)
         return FIXED[cc - 24u];
-    if (cc >= 36u && cc <= 43u)
-        return P_E0 + cc - 36u;
+    if (cc >= 102u && cc <= 109u)
+        return FIXED[4u + cc - 102u];
+    if (cc >= 110u && cc <= 117u)
+        return P_E0 + cc - 110u;
     return P_COUNT;
 }
 
@@ -94,11 +99,11 @@ test_block = test_anchor + r'''    {
                      trk[1].p[P_REV] == track_desc(&trk[1], P_REV)->max &&
                      t->p[P_REV] != track_desc(t, P_REV)->max);
 
-        queued(0xB0, 33, 64, 1);
+        queued(0xB0, 107, 64, 1);
         bad += check("S49 bipolar PAN maps MIDI centre to zero", t->p[P_PAN] == 0);
 
-        queued(0xB0, 36, 127, 1);
-        bad += check("S49 CC36 reaches engine parameter E1",
+        queued(0xB0, 110, 127, 1);
+        bad += check("S49 CC110 reaches engine parameter E1",
                      t->p[P_E0] == track_desc(t, P_E0)->max);
     }
 '''
