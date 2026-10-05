@@ -1,0 +1,49 @@
+name: Build Felucca S49 Edition
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout S49 patch repository
+        uses: actions/checkout@v4
+
+      - name: Checkout pinned Felucca 1.0.1 source
+        run: |
+          git clone https://github.com/hugelton/Felucca.git upstream
+          git -C upstream checkout 20c275e39f75fa820978032efaceddfc5283c8cb
+          git -C upstream apply "$GITHUB_WORKSPACE/patches/felucca-s49.patch"
+
+      - name: Python build dependencies
+        run: python3 -m pip install --user Pillow fonttools
+
+      - name: JieLi toolchain
+        run: |
+          cd upstream
+          tools/get_toolchain.sh
+
+      - name: JieLi AC79 SDK
+        run: |
+          git clone --depth 1 --branch AC79NN_SDK_V1.2.1_2023-12-13 \
+            https://gitee.com/Jieli-Tech/fw-AC79_AIoT_SDK.git "$HOME/fw-AC79_AIoT_SDK"
+
+      - name: Build firmware
+        run: |
+          cd upstream
+          ./build.sh --release 1.0.1
+          cp build/felucca-1.0.1.fwsc build/felucca-1.0.1-s49.fwsc
+
+      - name: Run Felucca host tests
+        run: |
+          cd upstream
+          tests/run_tests.sh
+
+      - name: Upload installable firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: felucca-1.0.1-s49
+          path: upstream/build/felucca-1.0.1-s49.fwsc
+          if-no-files-found: error
