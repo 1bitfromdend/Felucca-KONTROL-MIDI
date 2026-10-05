@@ -75,7 +75,7 @@ Open **Actions → Build Felucca S49 Edition → Run workflow**.
 When the job is green, download the artifact named `felucca-1.0.1-s49`. Inside it is:
 
 `felucca-1.0.1-s49.fwsc`
-Upstream
+## Upstream
 
 Felucca S49 Edition is based on the upstream Felucca 1.0.1 firmware by Hügelton Instruments.
 
