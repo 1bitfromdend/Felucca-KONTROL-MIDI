@@ -30,10 +30,30 @@ jobs:
           cd upstream
           tools/get_toolchain.sh
 
+      - name: Cache JieLi AC79 SDK
+        id: sdk-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/fw-AC79_AIoT_SDK
+          key: jieli-ac79-sdk-v1.2.1-2023-12-13
+
       - name: JieLi AC79 SDK
+        if: steps.sdk-cache.outputs.cache-hit != 'true'
         run: |
-          git clone --depth 1 --branch AC79NN_SDK_V1.2.1_2023-12-13 \
-            https://gitee.com/Jieli-Tech/fw-AC79_AIoT_SDK.git "$HOME/fw-AC79_AIoT_SDK"
+          set -e
+          for attempt in 1 2 3; do
+            echo "SDK download attempt $attempt/3"
+            rm -rf "$HOME/fw-AC79_AIoT_SDK"
+            if timeout 180 git -c http.version=HTTP/1.1 clone --depth 1 \
+              --branch AC79NN_SDK_V1.2.1_2023-12-13 \
+              https://gitee.com/Jieli-Tech/fw-AC79_AIoT_SDK.git \
+              "$HOME/fw-AC79_AIoT_SDK"; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Gitee SDK download failed after 3 attempts"
+          exit 1
 
       - name: Build test firmware
         run: |
