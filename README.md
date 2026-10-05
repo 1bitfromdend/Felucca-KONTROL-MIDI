@@ -75,5 +75,20 @@ Open **Actions → Build Felucca S49 Edition → Run workflow**.
 When the job is green, download the artifact named `felucca-1.0.1-s49`. Inside it is:
 
 `felucca-1.0.1-s49.fwsc`
+Upstream
+
+Felucca S49 Edition is based on the upstream Felucca 1.0.1 firmware by Hügelton Instruments.
+
+Upstream repository: https://github.com/hugelton/Felucca
+
+Upstream version: 1.0.1
+
+Upstream commit: 20c275e39f75fa820978032efaceddfc5283c8cb
+
+The build workflow always downloads this exact upstream commit before applying the S49 Edition patch, so builds remain reproducible and independent from later upstream changes.
+
+This project is an independent community modification and is not officially affiliated with, endorsed by, or supported by Hügelton Instruments, Native Instruments, or M-VAVE.
+
+Felucca remains the work of its original authors. This repository only adds the S49-specific MIDI-control modifications and related build automation.
 
 This is a custom firmware build. Flashing third-party firmware always carries recovery risk; keep the official Felucca installer and FM-1-transporter recovery path available.
