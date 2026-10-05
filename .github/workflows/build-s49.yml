@@ -32,7 +32,7 @@ jobs:
 
       - name: Cache JieLi AC79 SDK
         id: sdk-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/fw-AC79_AIoT_SDK
           key: jieli-ac79-sdk-v1.2.1-2023-12-13
@@ -72,7 +72,7 @@ jobs:
           cp build/felucca-1.0.1.fwsc build/felucca-1.0.1-s49.fwsc
 
       - name: Upload installable firmware
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: felucca-1.0.1-s49
           path: upstream/build/felucca-1.0.1-s49.fwsc
