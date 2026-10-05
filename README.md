@@ -37,22 +37,24 @@ The first four controls are deliberately dynamic: they always address the four p
 
 | Knob | CC | Felucca |
 |---|---:|---|
-| 1 | 28 | Decay |
-| 2 | 29 | Sustain |
-| 3 | 30 | Distortion |
-| 4 | 31 | Chorus send |
-| 5 | 32 | Track level |
-| 6 | 33 | Pan |
-| 7 | 34 | LFO rate |
-| 8 | 35 | Glide |
+| 1 | 102 | Decay |
+| 2 | 103 | Sustain |
+| 3 | 104 | Distortion |
+| 4 | 105 | Chorus send |
+| 5 | 106 | Track level |
+| 6 | 107 | Pan |
+| 7 | 108 | LFO rate |
+| 8 | 109 | Glide |
 
 ### Page 3 — ENGINE
 
 | Knob | CC | Felucca |
 |---|---:|---|
-| 1..8 | 36..43 | Engine parameters E1..E8 |
+| 1..8 | 110..117 | Engine parameters E1..E8 |
 
 E1..E8 mean different things on different engines, exactly like Felucca's EDIT parameters.
+
+CC32..63 are intentionally not used by the S49 Edition because they are the LSB range for standard 14-bit MIDI controllers. In particular, CC38 is Data Entry LSB used by RPN pitch-bend sensitivity.
 
 ## Existing MIDI controls retained
 
