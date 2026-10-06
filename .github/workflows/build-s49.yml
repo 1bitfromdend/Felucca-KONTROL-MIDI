@@ -17,10 +17,10 @@ jobs:
       - name: Checkout S49 patch repository
         uses: actions/checkout@v5
 
-      - name: Checkout pinned Felucca 1.0.1 source
+      - name: Checkout pinned Felucca 1.0.2 source
         run: |
           git clone https://github.com/hugelton/Felucca.git upstream
-          git -C upstream checkout 20c275e39f75fa820978032efaceddfc5283c8cb
+          git -C upstream checkout db70550344f36cb10657d1652f567b5932ac4b2b
           python3 tools/apply_s49.py
 
       - name: Python build dependencies
@@ -69,12 +69,12 @@ jobs:
       - name: Build release firmware
         run: |
           cd upstream
-          ./build.sh --release 1.0.1
-          cp build/felucca-1.0.1.fwsc build/felucca-1.0.1-s49.fwsc
+          ./build.sh --release 1.0.2
+          cp build/felucca-1.0.2.fwsc build/felucca-1.0.2-s49.fwsc
 
       - name: Upload installable firmware
         uses: actions/upload-artifact@v7
         with:
-          name: felucca-1.0.1-s49
-          path: upstream/build/felucca-1.0.1-s49.fwsc
+          name: felucca-1.0.2-s49
+          path: upstream/build/felucca-1.0.2-s49.fwsc
           if-no-files-found: error
