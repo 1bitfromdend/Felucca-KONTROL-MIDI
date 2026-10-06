@@ -1,6 +1,6 @@
 # Felucca S49 Edition
 
-Full MIDI remote-control patch for **Native Instruments Kontrol S49 MK3 + M-VAVE FM-1 running Felucca 1.0.1**.
+Full MIDI remote-control patch for **Native Instruments Kontrol S49 MK3 + M-VAVE FM-1 running Felucca 1.0.2**.
 
 The purpose of this build is to use the S49 as the main performance and editing surface for Felucca:
 
@@ -10,7 +10,7 @@ The purpose of this build is to use the S49 as the main performance and editing 
 - reproduce the FM-1's seven digital encoders over MIDI
 - keep Felucca's original MIDI behaviour, including sustain, pitch bend, aftertouch and modulation
 
-The repository stores the firmware patch, build workflow and ready-to-import S49 MIDI template. GitHub Actions downloads the exact upstream Felucca 1.0.1 commit, applies the patch, runs the host tests and produces an installable `.fwsc`.
+The repository stores the firmware patch, build workflow and ready-to-import S49 MIDI template. GitHub Actions downloads the exact upstream Felucca 1.0.2 commit, applies the patch, runs the host tests and produces an installable `.fwsc`.
 
 The custom build also identifies itself visually at boot with **S49 EDITION** under the original Felucca splash screen. The technical package identity used by the installer is left unchanged.
 
@@ -309,7 +309,7 @@ The following physical-panel model is therefore retained:
 
 # 9. Quick-layer reference
 
-Felucca 1.0.1 has four hold layers.
+Felucca 1.0.2 has four hold layers.
 
 The virtual S49 buttons preserve the **button-hold state** required to open them.
 
@@ -632,15 +632,15 @@ Open:
 
 When the job is green, download the artifact:
 
-`felucca-1.0.1-s49`
+`felucca-1.0.2-s49`
 
 Inside it is:
 
-`felucca-1.0.1-s49.fwsc`
+`felucca-1.0.2-s49.fwsc`
 
 The workflow:
 
-1. clones the pinned Felucca 1.0.1 source
+1. clones the pinned Felucca 1.0.2 source
 2. applies the S49 Edition patch
 3. builds the firmware
 4. runs Felucca host tests, including S49 control tests
@@ -655,11 +655,11 @@ The firmware package (`.fwsc`) is installed on the **FM-1**. The MIDI template (
 
 ### 1. Download the custom firmware
 
-1. Open this repository's [Actions](https://github.com/1bitfromdend/felucca_1.0.1_S49V0.1/actions).
+1. Open this repository's [Actions](https://github.com/1bitfromdend/felucca_1.0.2_S49V0.1/actions).
 2. Select a successful **Build Felucca S49 Edition** run. Choose a firmware build, not a documentation-only commit.
-3. Under **Artifacts**, download **`felucca-1.0.1-s49`**. GitHub may require you to sign in.
-4. Extract the ZIP. The file to install is **`felucca-1.0.1-s49.fwsc`**.
-5. Download the [official Python installer matching the pinned Felucca source](https://raw.githubusercontent.com/hugelton/Felucca/20c275e39f75fa820978032efaceddfc5283c8cb/tools/fm1_install.py) and save it as **`fm1_install.py`**.
+3. Under **Artifacts**, download **`felucca-1.0.2-s49`**. GitHub may require you to sign in.
+4. Extract the ZIP. The file to install is **`felucca-1.0.2-s49.fwsc`**.
+5. Download the [official Python installer matching the pinned Felucca source](https://raw.githubusercontent.com/hugelton/Felucca/db70550344f36cb10657d1652f567b5932ac4b2b/tools/fm1_install.py) and save it as **`fm1_install.py`**.
 6. Put both files in the same folder, for example a folder named **`Felucca-S49`** on your Desktop.
 
 Use the artifact from **this repository** to install S49 Edition. Installing the ordinary upstream Felucca release instead does not include this project's remote-control patch.
@@ -692,7 +692,7 @@ python fm1_install.py --info
 Install the custom firmware:
 
 ```bash
-python fm1_install.py felucca-1.0.1-s49.fwsc
+python fm1_install.py felucca-1.0.2-s49.fwsc
 ```
 
 Read the installer prompt and confirm when asked. Wait for the package transfer, flash write, automatic restart and identity check to finish.
@@ -706,7 +706,7 @@ cd "$env:USERPROFILE\Desktop\Felucca-S49"
 py -3 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install mido python-rtmidi
 .\.venv\Scripts\python.exe fm1_install.py --info
-.\.venv\Scripts\python.exe fm1_install.py felucca-1.0.1-s49.fwsc
+.\.venv\Scripts\python.exe fm1_install.py felucca-1.0.2-s49.fwsc
 ```
 
 No PowerShell environment activation is needed for these commands. If your Desktop is redirected, use its actual folder path. Confirm at the installer prompt and wait until installation finishes.
@@ -725,7 +725,7 @@ The installer normally detects eligible FM-1 ports automatically. If necessary, 
 
 ```bash
 python fm1_install.py --info --port "Felucca"
-python fm1_install.py felucca-1.0.1-s49.fwsc --port "Felucca"
+python fm1_install.py felucca-1.0.2-s49.fwsc --port "Felucca"
 ```
 
 Replace `Felucca` with a name actually shown by your system. On Windows use `.\.venv\Scripts\python.exe` in place of `python`.
@@ -751,11 +751,11 @@ If the FM-1 cannot start and appears as **WL80UBOOT**, see the [upstream recover
 
 # 18. Upstream
 
-Felucca S49 Edition is based on the upstream **Felucca 1.0.1** firmware by Hügelton Instruments.
+Felucca S49 Edition is based on the upstream **Felucca 1.0.2** firmware by Hügelton Instruments.
 
 - Upstream repository: https://github.com/hugelton/Felucca
-- Upstream version: `1.0.1`
-- Upstream commit: `20c275e39f75fa820978032efaceddfc5283c8cb`
+- Upstream version: `1.0.2`
+- Upstream commit: `db70550344f36cb10657d1652f567b5932ac4b2b`
 
 The build workflow always downloads this exact upstream commit before applying the S49 Edition patch, so builds remain reproducible and independent from later upstream changes.
 
