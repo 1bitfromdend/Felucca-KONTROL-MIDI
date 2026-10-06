@@ -12,6 +12,8 @@ The purpose of this build is to use the S49 as the main performance and editing 
 
 The repository intentionally stores only the patch and build workflow. GitHub Actions downloads the exact upstream Felucca 1.0.1 commit, applies the patch, runs the host tests and produces an installable `.fwsc`.
 
+The custom build also identifies itself visually at boot with **S49 EDITION** under the original Felucca splash screen. The technical package identity used by the installer is left unchanged.
+
 ---
 
 ## 1. MIDI architecture
