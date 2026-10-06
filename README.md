@@ -655,7 +655,7 @@ The firmware package (`.fwsc`) is installed on the **FM-1**. The MIDI template (
 
 ### 1. Download the custom firmware
 
-1. Open this repository's [Actions](https://github.com/1bitfromdend/felucca_1.0.1_S49V0.1/actions).
+1. Open this repository's [Actions](https://github.com/1bitfromdend/felucca-S49_1.0.2/actions).
 2. Select a successful **Build Felucca S49 Edition** run. Choose a firmware build, not a documentation-only commit.
 3. Under **Artifacts**, download **`felucca-1.0.2-s49`**. GitHub may require you to sign in.
 4. Extract the ZIP. The file to install is **`felucca-1.0.2-s49.fwsc`**.
