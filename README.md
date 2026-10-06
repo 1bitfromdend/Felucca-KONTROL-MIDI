@@ -10,7 +10,7 @@ The purpose of this build is to use the S49 as the main performance and editing 
 - reproduce the FM-1's seven digital encoders over MIDI
 - keep Felucca's original MIDI behaviour, including sustain, pitch bend, aftertouch and modulation
 
-The repository intentionally stores only the patch and build workflow. GitHub Actions downloads the exact upstream Felucca 1.0.1 commit, applies the patch, runs the host tests and produces an installable `.fwsc`.
+The repository stores the firmware patch, build workflow and ready-to-import S49 MIDI template. GitHub Actions downloads the exact upstream Felucca 1.0.1 commit, applies the patch, runs the host tests and produces an installable `.fwsc`.
 
 The custom build also identifies itself visually at boot with **S49 EDITION** under the original Felucca splash screen. The technical package identity used by the installer is left unchanged.
 
@@ -30,7 +30,9 @@ Felucca's normal routing is preserved:
 | CH4 | Track 4 |
 | CH5..CH16 | Selected track |
 
-With `ROUT=SEL`, Felucca's original selected-track routing remains unchanged.
+For the included template, set **`ROUT=SEL` on Felucca** and leave the S49 keybed on **CH1**. The full keyboard then plays the currently selected track. Turn the **TRACK** knob (CC71 on CH16) to change tracks without editing the template or splitting the keyboard.
+
+The channel-to-track table above applies to `ROUT=CH1-4`.
 
 This means an S49 split / zone setup can use CH1..CH4 to play the four Felucca tracks directly.
 
@@ -55,7 +57,8 @@ The panel commands themselves are consumed by the S49 Edition firmware and do no
 | MAIN / SHAPE / ENGINE parameter knobs | CC, Absolute, 0..127 | 16 |
 | Virtual FM-1 encoders | CC, Relative Offset | 16 |
 | Virtual FM-1 buttons | CC, Gate, Off 0 / On 127 | 16 |
-| Musical keyboard zones | Note On / Note Off | 1..4 |
+| Included template keybed (`ROUT=SEL`) | Note On / Note Off | 1 |
+| Optional fixed-track keyboard zones (`ROUT=CH1-4`) | Note On / Note Off | 1..4 |
 | Mod wheel | CC1 | track channel |
 | Expression | CC11 | track channel |
 | Sustain pedal | CC64 | track channel |
@@ -454,75 +457,100 @@ The custom mapping is not USB-only.
 
 ---
 
-# 13. Suggested S49 template layout
+# 13. Included S49 MIDI template
 
-A practical S49 template is five pages.
+Download [FM-01.kmt](templates/FM-01.kmt) (use GitHub's **Download raw file** button).
 
-## Page 1 — MAIN
+This is the two-page template configured for the S49 Edition firmware. It includes the custom **Felucca S49 Edition** black/red banner. Every display knob and button sends on **CH16**; the single full-range keyzone remains on **CH1**. MIDI output preference is **DIN priority**.
 
-Knobs:
+![Felucca S49 Edition display banner](templates/Felucca-S49-Edition.jpg)
 
-| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
-|---|---|---|---|---|---|---|---|
-| HOME1 | HOME2 | HOME3 | HOME4 | ATK | REL | DLY | REV |
-| CC20 | CC21 | CC22 | CC23 | CC24 | CC25 | CC26 | CC27 |
+*Embedded display artwork; the S49's button labels and knob indicators appear above and below this banner.*
 
-Mode: **Absolute**, CH16.
+### Import and play
 
-## Page 2 — SHAPE / MIX
+1. Connect the S49 to a computer by USB with **NI Hardware Connection Service** installed and running.
+2. Open the MIDI Template browser and choose **Import**. Select the downloaded `FM-01.kmt` in the computer's import window and send it to the keyboard.
+3. Load the **FM-01** template.
+4. Connect S49 **MIDI OUT** to FM-1 **MIDI IN** through the appropriate DIN/TRS connection.
+5. Set **`ROUT=SEL` on Felucca**. Leave the S49 keybed on CH1.
+6. Use **TRACK** on page 1 to select a track. All 49 keys now play that selected track.
 
-Knobs:
+Import/export requires a computer; the imported template can then be used standalone. Use the S49 Page arrow buttons to switch between its two control pages. The custom artwork requires S49 firmware with MIDI-template artwork support (introduced in version 1.8).
 
-| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
-|---|---|---|---|---|---|---|---|
-| DEC | SUS | DIST | CHOR | LEVEL | PAN | LFO | GLIDE |
-| CC102 | CC103 | CC104 | CC105 | CC106 | CC107 | CC108 | CC109 |
+### Page 1 — panel controls
 
-Mode: **Absolute**, CH16.
+| Knob | Label | CC | Mode | Function |
+|---:|---|---:|---|---|
+| 1 | BPM | 70 | Relative Offset, step 1 | SELECT encoder: BPM / contextual selection |
+| 2 | TRACK | 71 | Relative Offset, step 1 | Select Track 1..4 |
+| 3 | PRESET | 72 | Relative Offset, step 1 | Browse selected track sounds / presets |
+| 4 | KNOB1 | 73 | Relative Offset, step 1 | Current FM-1 page column 1 |
+| 5 | KNOB2 | 74 | Relative Offset, step 1 | Current FM-1 page column 2 |
+| 6 | KNOB3 | 75 | Relative Offset, step 1 | Current FM-1 page column 3 |
+| 7 | KNOB4 | 76 | Relative Offset, step 1 | Current FM-1 page column 4 |
+| 8 | LEVEL | 106 | Absolute, 0..127 | Selected track level |
 
-## Page 3 — ENGINE
+KNOB1..4 follow the page open on the FM-1, including HOME, ENV, FX, LFO and EDIT. They provide contextual access beyond the direct controls on page 2.
 
-Knobs:
+| Button | Label | CC |
+|---:|---|---:|
+| 1 | FX | 80 |
+| 2 | SCALE | 81 |
+| 3 | ENV | 82 |
+| 4 | LFO | 83 |
+| 5 | EDIT | 84 |
+| 6 | GLOBAL | 85 |
+| 7 | HOME | 86 |
+| 8 | SAVE | 87 |
 
-| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
-|---|---|---|---|---|---|---|---|
-| E1 | E2 | E3 | E4 | E5 | E6 | E7 | E8 |
-| CC110 | CC111 | CC112 | CC113 | CC114 | CC115 | CC116 | CC117 |
+All buttons use **Gate, Off 0 / On 127** on CH16, retaining tap / hold / release behaviour.
 
-Mode: **Absolute**, CH16.
+### Page 2 — direct sound controls and transport
 
-## Page 4 — PANEL A
+| Knob | Label | CC |
+|---:|---|---:|
+| 1 | HOME 1 | 20 |
+| 2 | HOME 2 | 21 |
+| 3 | HOME 3 | 22 |
+| 4 | HOME 4 | 23 |
+| 5 | ATTACK | 24 |
+| 6 | RELEASE | 25 |
+| 7 | DELAY | 26 |
+| 8 | REVERB | 27 |
 
-Buttons:
+All eight knobs use **Absolute, 0..127**, CH16. HOME 1..4 change function with the selected engine.
 
-| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
-|---|---|---|---|---|---|---|---|
-| FX | SCL | ENV | LFO | EDIT | GLO | HOME | SAVE |
-| CC80 | CC81 | CC82 | CC83 | CC84 | CC85 | CC86 | CC87 |
+| Button | Label | CC |
+|---:|---|---:|
+| 1 | ARP | 88 |
+| 2 | SEQ | 89 |
+| 3 | PLAY | 90 |
+| 4 | REC | 91 |
+| 5 | OCT - | 92 |
+| 6 | OCT + | 93 |
+| 7 | HOME | 86 |
+| 8 | SAVE | 87 |
 
-Mode: **Gate 0/127**, CH16.
+All buttons use **Gate, Off 0 / On 127**, CH16. OCT - / OCT + reproduce the FM-1's contextual octave / back / cancel / enter / confirm buttons. To transpose notes sent by the S49 itself, use its native octave controls.
 
-Knobs:
+### Artwork and display behaviour
 
-| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
-|---|---|---|---|---|---|---|---|
-| SELECT | TRACK | PRESET | K1 | K2 | K3 | K4 | spare |
-| CC70 | CC71 | CC72 | CC73 | CC74 | CC75 | CC76 | — |
+The template embeds a **1280 × 212 JPEG banner** in `image_data` as a complete Base64 data URL beginning with `data:image/jpeg;base64,`. `hide_template_name=true` prevents the ordinary template title from overlaying the artwork.
 
-Knobs 1..7: **Relative Offset**, CH16.
+The banner occupies the center display area; it does not mirror the FM-1 screen. Control labels stay those defined in the template, so KNOB1..4 and HOME 1..4 do not automatically acquire the current engine's parameter names.
 
-## Page 5 — PANEL B
+The S49's on-screen knob indicator can reach its visual endpoint while a **Relative Offset** knob continues sending increments. Preset browsing was confirmed to continue beyond that visual endpoint.
 
-Buttons:
+### Firmware controls beyond this template
 
-| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
-|---|---|---|---|---|---|---|---|
-| ARP | SEQ | PLAY | REC | OCT- | OCT+ | HOME | SAVE |
-| CC88 | CC89 | CC90 | CC91 | CC92 | CC93 | CC86 | CC87 |
+Sections 3 and 14 list the complete firmware CC map. The included template has two pages; the SHAPE / MIX and ENGINE groups in section 3 are optional direct-CC assignments, not additional pages inside this file. Those parameters can also be edited through the contextual panel controls where Felucca exposes them.
 
-Mode: **Gate 0/127**, CH16.
+### Hardware checks
 
-Repeat the same virtual encoder assignment CC70..76 on the knobs so navigation remains available on both panel pages.
+The flashed S49 Edition firmware was checked through the S49's MIDI OUT → FM-1 TRS MIDI IN: note playback, direct Attack control, HOME tap and hold, track selection, preset browsing and `ROUT=SEL` selected-track playback. The template's assignments and embedded image data URL have been validated as JSON; loading and rendering the artwork must be checked on the S49.
+
+NI reference: [How to use MIDI Templates with the Kontrol S-Series MK3](https://support.native-instruments.com/support/solutions/articles/69000879639-how-to-use-midi-templates-with-the-kontrol-s-series-mk3).
 
 ---
 
