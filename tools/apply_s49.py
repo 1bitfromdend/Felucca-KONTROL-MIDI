@@ -244,7 +244,7 @@ if splash_anchor not in m:
     raise SystemExit("main.c splash anchor not found")
 m = m.replace(splash_anchor, '''    draw_text_box(0, 94, 240, &AF_L, "FELUCCA", T_THEME, 1);
     draw_text_box(0, 134, 240, &AF_S, "MULTI-ENGINE SYNTH", T_MID, 1);
-    draw_text_box(0, 156, 240, &AF_S, "S49 EDITION", T_THEME, 1);
+    draw_text_box(0, 156, 240, &AF_S, "S49 EDITION", T_REC, 1);
 ''', 1)
 main.write_text(m)
 
