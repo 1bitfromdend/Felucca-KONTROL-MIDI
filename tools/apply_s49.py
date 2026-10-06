@@ -7,6 +7,7 @@ midi = src / "midi_control.c"
 panel = src / "panel.c"
 ui_input = src / "ui_input.c"
 ui_layer = src / "ui_layer.c"
+main = src / "main.c"
 test = root / "upstream" / "tests" / "midi_control_test.c"
 
 s = midi.read_text()
@@ -234,6 +235,18 @@ if "fm1_in.buttons" not in l:
     raise SystemExit("ui_layer.c button anchor not found")
 l = l.replace("fm1_in.buttons", "panel_buttons()")
 ui_layer.write_text(l)
+
+m = main.read_text()
+splash_anchor = '''    draw_text_box(0, 94, 240, &AF_L, "FELUCCA", T_THEME, 1);
+    draw_text_box(0, 134, 240, &AF_S, "MULTI-ENGINE SYNTH", T_MID, 1);
+'''
+if splash_anchor not in m:
+    raise SystemExit("main.c splash anchor not found")
+m = m.replace(splash_anchor, '''    draw_text_box(0, 94, 240, &AF_L, "FELUCCA", T_THEME, 1);
+    draw_text_box(0, 134, 240, &AF_S, "MULTI-ENGINE SYNTH", T_MID, 1);
+    draw_text_box(0, 156, 240, &AF_S, "S49 EDITION", T_THEME, 1);
+''', 1)
+main.write_text(m)
 
 t = test.read_text()
 reset_anchor = '''    fm1_in.notes = kb_prev = 0; fm1_ms = 0; song.sel = 0;
