@@ -649,13 +649,103 @@ The workflow:
 
 ---
 
-# 17. Installation / recovery
+# 17. Install the S49 Edition firmware
 
-This is a custom firmware build.
+The firmware package (`.fwsc`) is installed on the **FM-1**. The MIDI template (`.kmt`) is imported separately on the **S49**, as described in section 13.
 
-Use the official Felucca FM-1 installer path to install the generated `.fwsc`.
+### 1. Download the custom firmware
 
-Flashing third-party firmware always carries recovery risk. Keep the official Felucca installer and **FM-1-transporter** recovery path available.
+1. Open this repository's [Actions](https://github.com/1bitfromdend/felucca_1.0.1_S49V0.1/actions).
+2. Select a successful **Build Felucca S49 Edition** run. Choose a firmware build, not a documentation-only commit.
+3. Under **Artifacts**, download **`felucca-1.0.1-s49`**. GitHub may require you to sign in.
+4. Extract the ZIP. The file to install is **`felucca-1.0.1-s49.fwsc`**.
+5. Download the [official Python installer matching the pinned Felucca source](https://raw.githubusercontent.com/hugelton/Felucca/20c275e39f75fa820978032efaceddfc5283c8cb/tools/fm1_install.py) and save it as **`fm1_install.py`**.
+6. Put both files in the same folder, for example a folder named **`Felucca-S49`** on your Desktop.
+
+Use the artifact from **this repository** to install S49 Edition. Installing the ordinary upstream Felucca release instead does not include this project's remote-control patch.
+
+### 2. Connect the FM-1
+
+- Install Python 3 if it is not already available.
+- Close DAWs, MIDI monitors, browser MIDI editors and other applications that may hold the FM-1 MIDI ports.
+- Connect the **FM-1 directly to the computer with a USB data cable** and power it on.
+- Firmware installation uses **USB-MIDI**, not the S49 → FM-1 DIN/TRS performance connection.
+- Keep USB and power connected throughout the write and automatic restart.
+
+### 3. macOS / Linux terminal commands
+
+Open Terminal, enter the folder containing the two downloaded files, and create a local Python environment. This example uses the Desktop folder above; adjust the path if needed:
+
+```bash
+cd "$HOME/Desktop/Felucca-S49"
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install mido python-rtmidi
+```
+
+Check that the installer can identify the connected FM-1:
+
+```bash
+python fm1_install.py --info
+```
+
+Install the custom firmware:
+
+```bash
+python fm1_install.py felucca-1.0.1-s49.fwsc
+```
+
+Read the installer prompt and confirm when asked. Wait for the package transfer, flash write, automatic restart and identity check to finish.
+
+### 4. Windows PowerShell commands
+
+Open PowerShell and enter the folder containing the two downloaded files. This example uses the same Desktop folder:
+
+```powershell
+cd "$env:USERPROFILE\Desktop\Felucca-S49"
+py -3 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install mido python-rtmidi
+.\.venv\Scripts\python.exe fm1_install.py --info
+.\.venv\Scripts\python.exe fm1_install.py felucca-1.0.1-s49.fwsc
+```
+
+No PowerShell environment activation is needed for these commands. If your Desktop is redirected, use its actual folder path. Confirm at the installer prompt and wait until installation finishes.
+
+### 5. Verify and start playing
+
+1. The FM-1 should restart and show **S49 EDITION in red** under the original Felucca splash.
+2. If needed, check its identity again with `python fm1_install.py --info` (or the Windows interpreter command above). The installer's technical package identity remains the upstream identity; the splash and custom control behaviour distinguish S49 Edition.
+3. Load the included **FM-01** template on the S49.
+4. Reconnect the S49 MIDI OUT → FM-1 MIDI IN performance connection and set **`ROUT=SEL`** on Felucca.
+5. Test HOME, TRACK and PRESET from S49 page 1, then PLAY / REC and the direct controls on page 2.
+
+### Port selection and troubleshooting
+
+The installer normally detects eligible FM-1 ports automatically. If necessary, select one explicitly using a distinctive part of its MIDI port name:
+
+```bash
+python fm1_install.py --info --port "Felucca"
+python fm1_install.py felucca-1.0.1-s49.fwsc --port "Felucca"
+```
+
+Replace `Felucca` with a name actually shown by your system. On Windows use `.\.venv\Scripts\python.exe` in place of `python`.
+
+- **Missing mido / python-rtmidi:** run the dependency-install command using the same Python interpreter you use to launch the installer.
+- **FM-1 not found / port busy:** close other MIDI applications, check the USB data cable and reconnect the device.
+- **Interrupted install with the FM-1 still in update mode:** rerun the same install command to finish the write; the installer supports resuming from update mode.
+- **Package rejected:** check that you extracted the correct `.fwsc`. `--force` is not needed for this custom Felucca package.
+
+### Return to stock / recovery
+
+The installer also accepts the original M-VAVE **V15 `FM-1.fwsc`** package:
+
+```bash
+python fm1_install.py FM-1.fwsc
+```
+
+Use the authentic official V15 file. The [upstream web installer](https://hugelton.github.io/Felucca/) also offers **Return to official V15**.
+
+If the FM-1 cannot start and appears as **WL80UBOOT**, see the [upstream recovery instructions](https://github.com/hugelton/Felucca#if-the-fm-1-does-not-start) and [FM-1 Transporter](https://github.com/kurogedelic/FM-1-transporter). Transporter recovery is a separate hardware procedure, not the normal USB-MIDI installation.
 
 ---
 
