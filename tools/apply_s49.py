@@ -43,7 +43,7 @@ s49_block = r'''/* Native Instruments Kontrol S49 MK3 direct-control map.
  * the LSB half of standard 14-bit MIDI controllers; CC38 in particular is RPN
  * Data Entry LSB.
  */
-#define S49_PANEL_CH 15u
+#define FELUCCA_S49_PANEL 1\n#define S49_PANEL_CH 15u
 #define S49_PANEL_ENC_FIRST 70u
 #define S49_PANEL_BTN_FIRST 80u
 
@@ -182,6 +182,7 @@ panel_replacement = '''static uint32_t panel_btn_of(uint32_t matrix_id)        /
     return NB;
 }
 
+#ifdef FELUCCA_S49_PANEL
 /* S49 virtual-panel state uses logical button ids in the same order as B_FX..B_OCTUP.
  * Convert them through the calibrated physical-panel table only at this boundary, so a
  * calibrated FM-1 and the S49 still address the same printed controls. */
@@ -209,6 +210,13 @@ static int32_t panel_enc(uint32_t role)
 {
     return fm1_enc_take(panel.enc[role]) * panel.dir[role] + s49_panel_enc_take(role);
 }
+#else
+/* Standalone panel/settings host tests include panel.c without the MIDI engine. */
+static int32_t panel_enc(uint32_t role)
+{
+    return fm1_enc_take(panel.enc[role]) * panel.dir[role];
+}
+#endif
 '''
 p = p.replace(panel_anchor, panel_replacement, 1)
 panel.write_text(p)
