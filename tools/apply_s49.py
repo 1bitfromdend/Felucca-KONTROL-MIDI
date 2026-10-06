@@ -43,7 +43,8 @@ s49_block = r'''/* Native Instruments Kontrol S49 MK3 direct-control map.
  * the LSB half of standard 14-bit MIDI controllers; CC38 in particular is RPN
  * Data Entry LSB.
  */
-#define FELUCCA_S49_PANEL 1\n#define S49_PANEL_CH 15u
+#define FELUCCA_S49_PANEL 1
+#define S49_PANEL_CH 15u
 #define S49_PANEL_ENC_FIRST 70u
 #define S49_PANEL_BTN_FIRST 80u
 
