@@ -1,4 +1,4 @@
-# Felucca S49 Edition
+# Felucca-KONTROL-MIDI
 
 Full MIDI remote-control patch for **Native Instruments Kontrol S49 MK3 + M-VAVE FM-1 running Felucca 1.0.5.2**.
 
@@ -461,7 +461,7 @@ Download [FM-01.kmt](templates/FM-01.kmt) (use GitHub's **Download raw file** bu
 
 This is the two-page template configured for the S49 Edition firmware. It includes the custom **Felucca S49 Edition** black/red banner. Every display knob and button sends on **CH16**; the single full-range keyzone remains on **CH1**. MIDI output preference is **DIN priority**.
 
-![Felucca S49 Edition display banner](templates/Felucca-S49-Edition.jpg)
+![Felucca S49 Edition display banner](templates/Felucca-KONTROL-MIDI-Edition.jpg)
 
 *Embedded display artwork; the S49's button labels and knob indicators appear above and below this banner.*
 
@@ -653,12 +653,12 @@ The firmware package (`.fwsc`) is installed on the **FM-1**. The MIDI template (
 
 ### 1. Download the custom firmware
 
-1. Open this repository's [Actions](https://github.com/1bitfromdend/felucca-S49_1.0.2/actions).
+1. Open this repository's [Actions](https://github.com/1bitfromdend/Felucca-KONTROL-MIDI/actions).
 2. Select a successful **Build Felucca S49 Edition** run. Choose a firmware build, not a documentation-only commit.
 3. Under **Artifacts**, download **`felucca-1.0.5.2-s49`**. GitHub may require you to sign in.
 4. Extract the ZIP. The file to install is **`felucca-1.0.5.2-s49.fwsc`**.
 5. Download the [official Python installer matching the pinned Felucca source](https://raw.githubusercontent.com/hugelton/Felucca/7414269c4392cde8f4a4351c5f566314903b9116/tools/fm1_install.py) and save it as **`fm1_install.py`**.
-6. Put both files in the same folder, for example a folder named **`Felucca-S49`** on your Desktop.
+6. Put both files in the same folder, for example a folder named **`Felucca-KONTROL-MIDI`** on your Desktop.
 
 Use the artifact from **this repository** to install S49 Edition. Installing the ordinary upstream Felucca release instead does not include this project's remote-control patch.
 
@@ -675,7 +675,7 @@ Use the artifact from **this repository** to install S49 Edition. Installing the
 Open Terminal, enter the folder containing the two downloaded files, and create a local Python environment. This example uses the Desktop folder above; adjust the path if needed:
 
 ```bash
-cd "$HOME/Desktop/Felucca-S49"
+cd "$HOME/Desktop/Felucca-KONTROL-MIDI"
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install mido python-rtmidi
@@ -700,7 +700,7 @@ Read the installer prompt and confirm when asked. Wait for the package transfer,
 Open PowerShell and enter the folder containing the two downloaded files. This example uses the same Desktop folder:
 
 ```powershell
-cd "$env:USERPROFILE\Desktop\Felucca-S49"
+cd "$env:USERPROFILE\Desktop\Felucca-KONTROL-MIDI"
 py -3 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install mido python-rtmidi
 .\.venv\Scripts\python.exe fm1_install.py --info
