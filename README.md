@@ -1,6 +1,6 @@
 # Felucca S49 Edition
 
-Full MIDI remote-control patch for **Native Instruments Kontrol S49 MK3 + M-VAVE FM-1 running Felucca 1.0.2**.
+Full MIDI remote-control patch for **Native Instruments Kontrol S49 MK3 + M-VAVE FM-1 running Felucca 1.0.5.2**.
 
 The purpose of this build is to use the S49 as the main performance and editing surface for Felucca:
 
@@ -10,7 +10,7 @@ The purpose of this build is to use the S49 as the main performance and editing 
 - reproduce the FM-1's seven digital encoders over MIDI
 - keep Felucca's original MIDI behaviour, including sustain, pitch bend, aftertouch and modulation
 
-The repository stores the firmware patch, build workflow and ready-to-import S49 MIDI template. GitHub Actions downloads the exact upstream Felucca 1.0.2 commit, applies the patch, runs the host tests and produces an installable `.fwsc`.
+The repository stores the firmware patch, build workflow and ready-to-import S49 MIDI template. GitHub Actions downloads the exact upstream Felucca 1.0.5.2 commit, applies the patch, runs the host tests and produces an installable `.fwsc`.
 
 The custom build also identifies itself visually at boot with **S49 EDITION** under the original Felucca splash screen. The technical package identity used by the installer is left unchanged.
 
@@ -20,21 +20,18 @@ The custom build also identifies itself visually at boot with **S49 EDITION** un
 
 ### Musical tracks
 
-Felucca's normal routing is preserved:
+Felucca 1.0.5.2 has two routing modes:
 
-| MIDI channel | Felucca destination |
-|---:|---|
-| CH1 | Track 1 |
-| CH2 | Track 2 |
-| CH3 | Track 3 |
-| CH4 | Track 4 |
-| CH5..CH16 | Selected track |
+| ROUT mode | Musical MIDI routing |
+|---|---|
+| `CH1-4` | CH1 → Track 1, CH2 → Track 2, CH3 → Track 3, CH4 → Track 4; CH5..CH16 are ignored by upstream Felucca |
+| `SEL` | CH1..CH16 play the currently selected track |
 
 For the included template, set **`ROUT=SEL` on Felucca** and leave the S49 keybed on **CH1**. The full keyboard then plays the currently selected track. Turn the **TRACK** knob (CC71 on CH16) to change tracks without editing the template or splitting the keyboard.
 
-The channel-to-track table above applies to `ROUT=CH1-4`.
+The S49 Edition keeps its dedicated **CH16 custom CC map active in both ROUT modes**. Only the S49 CC ranges are exempted from the `CH1-4` filter; ordinary CH16 notes and controllers still follow upstream Felucca's routing rules.
 
-This means an S49 split / zone setup can use CH1..CH4 to play the four Felucca tracks directly.
+An S49 split / zone setup can therefore use CH1..CH4 for fixed-track playing in `ROUT=CH1-4`, while the S49 remote panel on CH16 remains available.
 
 ### Dedicated remote-control channel
 
@@ -309,9 +306,9 @@ The following physical-panel model is therefore retained:
 
 # 9. Quick-layer reference
 
-Felucca 1.0.2 has four hold layers.
+Felucca 1.0.5.2 has four quick layers. They can be opened by holding the corresponding button, and 1.0.5.2 also adds the upstream double-tap lock gesture.
 
-The virtual S49 buttons preserve the **button-hold state** required to open them.
+The virtual S49 buttons preserve press, hold and release state, so the same hold and double-tap layer behaviour is available from the S49.
 
 ## FX hold layer
 
@@ -378,7 +375,7 @@ The S49 keyboard uses Felucca's normal MIDI note implementation.
 
 ### Note routing
 
-With normal `ROUT=CH1-4`:
+With `ROUT=CH1-4`:
 
 | S49 MIDI channel | Destination |
 |---:|---|
@@ -386,10 +383,11 @@ With normal `ROUT=CH1-4`:
 | 2 | Track 2 |
 | 3 | Track 3 |
 | 4 | Track 4 |
+| 5..16 | Ignored for ordinary musical/control MIDI |
 
-Channels 5..16 play the currently selected track.
+With `ROUT=SEL`, all MIDI channels play the currently selected track.
 
-This allows S49 keyboard zones / splits to address several Felucca tracks.
+The S49 Edition's dedicated CH16 remote-control CCs are a deliberate exception to the `CH1-4` filter, so the existing S49 template keeps controlling the panel without changing its assignments.
 
 ### Note On / Note Off
 
@@ -632,15 +630,15 @@ Open:
 
 When the job is green, download the artifact:
 
-`felucca-1.0.2-s49`
+`felucca-1.0.5.2-s49`
 
 Inside it is:
 
-`felucca-1.0.2-s49.fwsc`
+`felucca-1.0.5.2-s49.fwsc`
 
 The workflow:
 
-1. clones the pinned Felucca 1.0.2 source
+1. clones the pinned Felucca 1.0.5.2 source
 2. applies the S49 Edition patch
 3. builds the firmware
 4. runs Felucca host tests, including S49 control tests
@@ -655,11 +653,11 @@ The firmware package (`.fwsc`) is installed on the **FM-1**. The MIDI template (
 
 ### 1. Download the custom firmware
 
-1. Open this repository's [Actions](https://github.com/1bitfromdend/felucca-S49_1.0.2/actions).
+1. Open this repository's [Actions](https://github.com/1bitfromdend/felucca-S49_1.0.5.2/actions).
 2. Select a successful **Build Felucca S49 Edition** run. Choose a firmware build, not a documentation-only commit.
-3. Under **Artifacts**, download **`felucca-1.0.2-s49`**. GitHub may require you to sign in.
-4. Extract the ZIP. The file to install is **`felucca-1.0.2-s49.fwsc`**.
-5. Download the [official Python installer matching the pinned Felucca source](https://raw.githubusercontent.com/hugelton/Felucca/db70550344f36cb10657d1652f567b5932ac4b2b/tools/fm1_install.py) and save it as **`fm1_install.py`**.
+3. Under **Artifacts**, download **`felucca-1.0.5.2-s49`**. GitHub may require you to sign in.
+4. Extract the ZIP. The file to install is **`felucca-1.0.5.2-s49.fwsc`**.
+5. Download the [official Python installer matching the pinned Felucca source](https://raw.githubusercontent.com/hugelton/Felucca/7414269c4392cde8f4a4351c5f566314903b9116/tools/fm1_install.py) and save it as **`fm1_install.py`**.
 6. Put both files in the same folder, for example a folder named **`Felucca-S49`** on your Desktop.
 
 Use the artifact from **this repository** to install S49 Edition. Installing the ordinary upstream Felucca release instead does not include this project's remote-control patch.
@@ -692,7 +690,7 @@ python fm1_install.py --info
 Install the custom firmware:
 
 ```bash
-python fm1_install.py felucca-1.0.2-s49.fwsc
+python fm1_install.py felucca-1.0.5.2-s49.fwsc
 ```
 
 Read the installer prompt and confirm when asked. Wait for the package transfer, flash write, automatic restart and identity check to finish.
@@ -706,7 +704,7 @@ cd "$env:USERPROFILE\Desktop\Felucca-S49"
 py -3 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install mido python-rtmidi
 .\.venv\Scripts\python.exe fm1_install.py --info
-.\.venv\Scripts\python.exe fm1_install.py felucca-1.0.2-s49.fwsc
+.\.venv\Scripts\python.exe fm1_install.py felucca-1.0.5.2-s49.fwsc
 ```
 
 No PowerShell environment activation is needed for these commands. If your Desktop is redirected, use its actual folder path. Confirm at the installer prompt and wait until installation finishes.
@@ -725,7 +723,7 @@ The installer normally detects eligible FM-1 ports automatically. If necessary, 
 
 ```bash
 python fm1_install.py --info --port "Felucca"
-python fm1_install.py felucca-1.0.2-s49.fwsc --port "Felucca"
+python fm1_install.py felucca-1.0.5.2-s49.fwsc --port "Felucca"
 ```
 
 Replace `Felucca` with a name actually shown by your system. On Windows use `.\.venv\Scripts\python.exe` in place of `python`.
@@ -751,11 +749,11 @@ If the FM-1 cannot start and appears as **WL80UBOOT**, see the [upstream recover
 
 # 18. Upstream
 
-Felucca S49 Edition is based on the upstream **Felucca 1.0.2** firmware by Hügelton Instruments.
+Felucca S49 Edition is based on the upstream **Felucca 1.0.5.2** firmware by Hügelton Instruments.
 
 - Upstream repository: https://github.com/hugelton/Felucca
-- Upstream version: `1.0.2`
-- Upstream commit: `db70550344f36cb10657d1652f567b5932ac4b2b`
+- Upstream version: `1.0.5.2`
+- Upstream commit: `7414269c4392cde8f4a4351c5f566314903b9116`
 
 The build workflow always downloads this exact upstream commit before applying the S49 Edition patch, so builds remain reproducible and independent from later upstream changes.
 

@@ -37,8 +37,11 @@ s49_block = r'''/* Native Instruments Kontrol S49 MK3 direct-control map.
  *               Kontrol mode: Gate (127 while held, 0 on release)
  *
  * The panel channel is deliberately CH16: CH1..4 remain musical track channels.
- * Felucca routes channels above CH4 to the selected track, so the absolute
- * parameter pages may also use CH16 to edit whichever track is selected.
+ * Felucca 1.0.5.2 normally ignores CH5..16 in ROUT=CH1-4. The S49 Edition
+ * exempts only its own CH16 CC map from that filter, so the remote panel and
+ * direct parameter pages keep working in either ROUT mode while ordinary
+ * CH16 notes/controllers retain upstream behaviour. CH16 S49 parameters edit
+ * whichever track is selected.
  *
  * CC32..63 are intentionally avoided for the absolute parameter pages: they are
  * the LSB half of standard 14-bit MIDI controllers; CC38 in particular is RPN
@@ -151,6 +154,27 @@ replacement = s49_block + insert_before.replace(
     "    uint32_t i, mask;\n    if (s49_panel_control(ch, cc, value))\n        return;\n    if (s49_control(ch, cc, value))\n        return;\n"
 )
 s = s.replace(insert_before, replacement, 1)
+
+# Felucca 1.0.5.2 deliberately ignores CH5..16 while ROUT=CH1-4. Keep that
+# upstream rule for ordinary MIDI, but allow the dedicated S49 CH16 CC map
+# through so the existing template and wiring remain valid in both ROUT modes.
+route_anchor = """static void __attribute__((noinline)) midi_event(uint32_t st, uint32_t ch, uint32_t d1, uint32_t d2)
+{
+    if (ch >= NPART && !song.g[G_ROUTE])
+        return;
+"""
+if route_anchor not in s:
+    raise SystemExit("midi_control.c ROUT anchor not found")
+
+route_replacement = """static void __attribute__((noinline)) midi_event(uint32_t st, uint32_t ch, uint32_t d1, uint32_t d2)
+{
+    if (ch >= NPART && !song.g[G_ROUTE] &&
+        !(st == 0xB0u && ch == S49_PANEL_CH &&
+          ((d1 >= 20u && d1 <= 27u) || (d1 >= 70u && d1 <= 76u) ||
+           (d1 >= 80u && d1 <= 93u) || (d1 >= 102u && d1 <= 117u))))
+        return;
+"""
+s = s.replace(route_anchor, route_replacement, 1)
 midi.write_text(s)
 
 # Merge the virtual S49 buttons/encoders with the real FM-1 panel at the
