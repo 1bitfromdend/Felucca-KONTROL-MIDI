@@ -1,16 +1,16 @@
 # Felucca-KONTROL-MIDI
 
-Full MIDI remote-control patch for **Native Instruments Kontrol S49 MK3 + M-VAVE FM-1 running Felucca 1.0.5.2**.
+Full MIDI remote-control patch for **Native Instruments Kontrol S-Series MK3 (S49 MK3 / S61 MK3 / S88 MK3) + M-VAVE FM-1 running Felucca 1.0.5.2**.
 
-The purpose of this build is to use the S49 as the main performance and editing surface for Felucca:
+The purpose of this build is to use a Kontrol S-Series MK3 keyboard as the main performance and editing surface for Felucca:
 
-- play Felucca tracks from the S49 keyboard
+- play Felucca tracks from the Kontrol keyboard
 - edit the selected track from 24 absolute parameter controls
 - reproduce the FM-1's digital panel buttons over MIDI
 - reproduce the FM-1's seven digital encoders over MIDI
 - keep Felucca's original MIDI behaviour, including sustain, pitch bend, aftertouch and modulation
 
-The repository stores the firmware patch, build workflow and ready-to-import S49 MIDI template. GitHub Actions downloads the exact upstream Felucca 1.0.5.2 commit, applies the patch, runs the host tests and produces an installable `.fwsc`.
+The repository stores the firmware patch, build workflow and ready-to-import Kontrol S-Series MK3 MIDI template. The same MIDI control architecture applies to **S49 MK3, S61 MK3 and S88 MK3**; the number of keys does not affect the CC/button/encoder mapping. GitHub Actions downloads the exact upstream Felucca 1.0.5.2 commit, applies the patch, runs the host tests and produces an installable `.fwsc`.
 
 The custom build also identifies itself visually at boot with **S49 EDITION** under the original Felucca splash screen. The technical package identity used by the installer is left unchanged.
 
@@ -27,29 +27,29 @@ Felucca 1.0.5.2 has two routing modes:
 | `CH1-4` | CH1 → Track 1, CH2 → Track 2, CH3 → Track 3, CH4 → Track 4; CH5..CH16 are ignored by upstream Felucca |
 | `SEL` | CH1..CH16 play the currently selected track |
 
-For the included template, set **`ROUT=SEL` on Felucca** and leave the S49 keybed on **CH1**. The full keyboard then plays the currently selected track. Turn the **TRACK** knob (CC71 on CH16) to change tracks without editing the template or splitting the keyboard.
+For the included template, set **`ROUT=SEL` on Felucca** and leave the Kontrol keybed on **CH1**. The full keyboard then plays the currently selected track. Turn the **TRACK** knob (CC71 on CH16) to change tracks without editing the template or splitting the keyboard.
 
-The S49 Edition keeps its dedicated **CH16 custom CC map active in both ROUT modes**. Only the S49 CC ranges are exempted from the `CH1-4` filter; ordinary CH16 notes and controllers still follow upstream Felucca's routing rules.
+The Kontrol S-Series MK3 Edition keeps its dedicated **CH16 custom CC map active in both ROUT modes**. Only the S49 CC ranges are exempted from the `CH1-4` filter; ordinary CH16 notes and controllers still follow upstream Felucca's routing rules.
 
-An S49 split / zone setup can therefore use CH1..CH4 for fixed-track playing in `ROUT=CH1-4`, while the S49 remote panel on CH16 remains available.
+A Kontrol S-Series MK3 split / zone setup can therefore use CH1..CH4 for fixed-track playing in `ROUT=CH1-4`, while the S49 remote panel on CH16 remains available.
 
 ### Dedicated remote-control channel
 
-**MIDI CH16 is the S49 Edition panel-control channel.**
+**MIDI CH16 is the Kontrol S-Series MK3 Edition panel-control channel.**
 
 Use CH16 for:
 
-- the 24 absolute S49 parameter controls
+- the 24 absolute Kontrol parameter controls
 - the virtual FM-1 panel buttons
 - the virtual FM-1 panel encoders
 
-The panel commands themselves are consumed by the S49 Edition firmware and do not become ordinary Felucca parameter CCs.
+The panel commands themselves are consumed by the Kontrol S-Series MK3 Edition firmware and do not become ordinary Felucca parameter CCs.
 
 ---
 
-## 2. Recommended S49 control modes
+## 2. Recommended Kontrol S-Series MK3 control modes
 
-| Control type | S49 mode | MIDI channel |
+| Control type | Kontrol mode | MIDI channel |
 |---|---|---:|
 | MAIN / SHAPE / ENGINE parameter knobs | CC, Absolute, 0..127 | 16 |
 | Virtual FM-1 encoders | CC, Relative Offset | 16 |
@@ -71,7 +71,7 @@ For Relative Offset controls, the firmware interprets:
 
 ---
 
-# 3. S49 parameter pages
+# 3. Kontrol parameter pages
 
 These controls are **absolute 0..127 CCs**.
 
@@ -79,7 +79,7 @@ Putting them on **CH16** makes them edit the currently selected Felucca track.
 
 ## Page 1 — MAIN
 
-| S49 knob | CC | Felucca parameter |
+| Kontrol knob | CC | Felucca parameter |
 |---:|---:|---|
 | 1 | 20 | Engine HOME knob 1 |
 | 2 | 21 | Engine HOME knob 2 |
@@ -102,7 +102,7 @@ Changing engine therefore changes what CC20..23 control, exactly as the four phy
 
 ## Page 2 — SHAPE / MIX
 
-| S49 knob | CC | Felucca parameter |
+| Kontrol knob | CC | Felucca parameter |
 |---:|---:|---|
 | 1 | 102 | Decay |
 | 2 | 103 | Sustain |
@@ -119,7 +119,7 @@ The firmware scales MIDI 0..127 to the real Felucca descriptor range, including 
 
 ## Page 3 — ENGINE
 
-| S49 knob | CC | Felucca parameter |
+| Kontrol knob | CC | Felucca parameter |
 |---:|---:|---|
 | 1 | 110 | Engine E1 |
 | 2 | 111 | Engine E2 |
@@ -140,7 +140,7 @@ Example: on FM6 the engine parameters include its FM-specific controls, includin
 
 ## Why CC32..63 are not used
 
-CC32..63 are intentionally avoided for the S49 Edition absolute parameter pages because they are the LSB half of standard 14-bit MIDI controller pairs.
+CC32..63 are intentionally avoided for the Kontrol S-Series MK3 Edition absolute parameter pages because they are the LSB half of standard 14-bit MIDI controller pairs.
 
 In particular:
 
@@ -155,7 +155,7 @@ Felucca uses these for RPN pitch-bend sensitivity, so using CC38 as an ordinary 
 
 These controls reproduce the **digital buttons on the physical FM-1 panel**.
 
-Configure every S49 button as:
+Configure every Kontrol button as:
 
 - Type: **Control Change**
 - Mode: **Gate**
@@ -163,7 +163,7 @@ Configure every S49 button as:
 - On Value: **127**
 - MIDI Channel: **16**
 
-The firmware keeps the button held for as long as the S49 sends the Gate-on state, and releases it when the S49 sends 0.
+The firmware keeps the button held for as long as the Kontrol sends the Gate-on state, and releases it when the Kontrol sends 0.
 
 That means Felucca still sees real **press / hold / release** behaviour rather than a simplified one-shot command.
 
@@ -205,7 +205,7 @@ Because the virtual buttons preserve Gate state, the following original Felucca 
 | LFO | Open / advance LFO pages | No quick layer |
 | ARP | Open / advance ARP pages | No quick layer |
 
-Felucca's hold threshold and state machine remain the upstream implementation; the S49 Edition does not duplicate that logic.
+Felucca's hold threshold and state machine remain the upstream implementation; the Kontrol S-Series MK3 Edition does not duplicate that logic.
 
 ---
 
@@ -245,7 +245,7 @@ Configure them as:
 - Mode: **Relative Offset**
 - MIDI Channel: **16**
 
-| S49 knob | CC | Virtual FM-1 encoder | Main Felucca function |
+| Kontrol knob | CC | Virtual FM-1 encoder | Main Felucca function |
 |---:|---:|---|---|
 | 1 | 70 | SELECT | BPM / contextual selection |
 | 2 | 71 | ALGORITHM | Select Track 1..4 |
@@ -289,7 +289,7 @@ On the normal interface SELECT sets global BPM. In contextual Felucca screens it
 
 # 8. Original Felucca page-button behaviour
 
-The S49 virtual buttons call the same Felucca page logic as the FM-1 controls.
+The Kontrol virtual buttons call the same Felucca page logic as the FM-1 controls.
 
 The following physical-panel model is therefore retained:
 
@@ -361,23 +361,23 @@ The upstream EDIT quick layer provides fast engine / sound selection:
 
 ### Important quick-layer limitation
 
-The S49 Edition currently virtualizes the **panel buttons and encoders**, not the FM-1's local 27-key hardware matrix.
+The Kontrol S-Series MK3 Edition currently virtualizes the **panel buttons and encoders**, not the FM-1's local 27-key hardware matrix.
 
 Therefore the hold layer itself can be opened remotely, and its encoder functions can be controlled remotely, but **key-combination shortcuts that specifically depend on the FM-1's own local keys are not currently generated from ordinary external MIDI notes**.
 
-External S49 notes remain musical MIDI input.
+External Kontrol notes remain musical MIDI input.
 
 ---
 
 # 10. Keyboard and performance MIDI
 
-The S49 keyboard uses Felucca's normal MIDI note implementation.
+The Kontrol keyboard uses Felucca's normal MIDI note implementation.
 
 ### Note routing
 
 With `ROUT=CH1-4`:
 
-| S49 MIDI channel | Destination |
+| Kontrol MIDI channel | Destination |
 |---:|---|
 | 1 | Track 1 |
 | 2 | Track 2 |
@@ -387,7 +387,7 @@ With `ROUT=CH1-4`:
 
 With `ROUT=SEL`, all MIDI channels play the currently selected track.
 
-The S49 Edition's dedicated CH16 remote-control CCs are a deliberate exception to the `CH1-4` filter, so the existing S49 template keeps controlling the panel without changing its assignments.
+The Kontrol S-Series MK3 Edition's dedicated CH16 remote-control CCs are a deliberate exception to the `CH1-4` filter, so the existing Kontrol template keeps controlling the panel without changing its assignments.
 
 ### Note On / Note Off
 
@@ -403,7 +403,7 @@ MIDI notes pass through Felucca's existing track note logic, including the activ
 
 # 11. Existing MIDI CC and performance controls retained
 
-The S49 Edition leaves upstream MIDI controls intact.
+The Kontrol S-Series MK3 Edition leaves upstream MIDI controls intact.
 
 | MIDI message | Felucca behaviour |
 |---|---|
@@ -446,7 +446,7 @@ Drum tracks ignore sustain and pitch bend according to upstream Felucca behaviou
 
 The custom controls are processed by Felucca's shared MIDI control path.
 
-Therefore the S49 Edition mappings work through:
+Therefore the Kontrol S-Series MK3 Edition mappings work through:
 
 - **USB MIDI**
 - **TRS MIDI IN**
@@ -455,26 +455,26 @@ The custom mapping is not USB-only.
 
 ---
 
-# 13. Included S49 MIDI template
+# 13. Included Kontrol S-Series MK3 MIDI template
 
 Download [FM-01.kmt](templates/FM-01.kmt) (use GitHub's **Download raw file** button).
 
-This is the two-page template configured for the S49 Edition firmware. It includes the custom **Felucca S49 Edition** black/red banner. Every display knob and button sends on **CH16**; the single full-range keyzone remains on **CH1**. MIDI output preference is **DIN priority**.
+This is the two-page template configured for the Kontrol S-Series MK3 Edition firmware. It includes the custom black/red banner originally created on the S49 MK3; the template mapping itself is compatible with S49 MK3, S61 MK3 and S88 MK3. Every display knob and button sends on **CH16**; the single full-range keyzone remains on **CH1**. MIDI output preference is **DIN priority**.
 
-![Felucca S49 Edition display banner](templates/Felucca-KONTROL-MIDI-Edition.jpg)
+![Felucca Kontrol S-Series MK3 Edition display banner](templates/Felucca-S49-Edition.jpg)
 
-*Embedded display artwork; the S49's button labels and knob indicators appear above and below this banner.*
+*Embedded display artwork; the Kontrol button labels and knob indicators appear above and below this banner.*
 
 ### Import and play
 
-1. Connect the S49 to a computer by USB with **NI Hardware Connection Service** installed and running.
+1. Connect the Kontrol to a computer by USB with **NI Hardware Connection Service** installed and running.
 2. Open the MIDI Template browser and choose **Import**. Select the downloaded `FM-01.kmt` in the computer's import window and send it to the keyboard.
 3. Load the **FM-01** template.
-4. Connect S49 **MIDI OUT** to FM-1 **MIDI IN** through the appropriate DIN/TRS connection.
-5. Set **`ROUT=SEL` on Felucca**. Leave the S49 keybed on CH1.
+4. Connect the Kontrol **MIDI OUT** to FM-1 **MIDI IN** through the appropriate DIN/TRS connection.
+5. Set **`ROUT=SEL` on Felucca**. Leave the Kontrol keybed on CH1.
 6. Use **TRACK** on page 1 to select a track. All 49 keys now play that selected track.
 
-Import/export requires a computer; the imported template can then be used standalone. Use the S49 Page arrow buttons to switch between its two control pages. The custom artwork requires S49 firmware with MIDI-template artwork support (introduced in version 1.8).
+Import/export requires a computer; the imported template can then be used standalone. Use the Kontrol Page arrow buttons to switch between its two control pages. The custom artwork requires Kontrol S-Series MK3 firmware with MIDI-template artwork support (introduced in version 1.8).
 
 ### Page 1 — panel controls
 
@@ -530,7 +530,7 @@ All eight knobs use **Absolute, 0..127**, CH16. HOME 1..4 change function with t
 | 7 | HOME | 86 |
 | 8 | SAVE | 87 |
 
-All buttons use **Gate, Off 0 / On 127**, CH16. OCT - / OCT + reproduce the FM-1's contextual octave / back / cancel / enter / confirm buttons. To transpose notes sent by the S49 itself, use its native octave controls.
+All buttons use **Gate, Off 0 / On 127**, CH16. OCT - / OCT + reproduce the FM-1's contextual octave / back / cancel / enter / confirm buttons. To transpose notes sent by the Kontrol itself, use its native octave controls.
 
 ### Artwork and display behaviour
 
@@ -538,7 +538,7 @@ The template embeds a **1280 × 212 JPEG banner** in `image_data` as a complete 
 
 The banner occupies the center display area; it does not mirror the FM-1 screen. Control labels stay those defined in the template, so KNOB1..4 and HOME 1..4 do not automatically acquire the current engine's parameter names.
 
-The S49's on-screen knob indicator can reach its visual endpoint while a **Relative Offset** knob continues sending increments. Preset browsing was confirmed to continue beyond that visual endpoint.
+The Kontrol's on-screen knob indicator can reach its visual endpoint while a **Relative Offset** knob continues sending increments. Preset browsing was confirmed to continue beyond that visual endpoint.
 
 ### Firmware controls beyond this template
 
@@ -546,13 +546,13 @@ Sections 3 and 14 list the complete firmware CC map. The included template has t
 
 ### Hardware checks
 
-The flashed S49 Edition firmware was checked through the S49's MIDI OUT → FM-1 TRS MIDI IN: note playback, direct Attack control, HOME tap and hold, track selection, preset browsing and `ROUT=SEL` selected-track playback. The template's assignments and embedded image data URL have been validated as JSON; loading and rendering the artwork must be checked on the S49.
+The flashed Kontrol S-Series MK3 Edition firmware was physically checked on a **Kontrol S49 MK3** through MIDI OUT → FM-1 TRS MIDI IN: note playback, direct Attack control, HOME tap and hold, track selection, preset browsing and `ROUT=SEL` selected-track playback. The template's assignments and embedded image data URL have been validated as JSON; loading and rendering the artwork must be checked on the target Kontrol model.
 
 NI reference: [How to use MIDI Templates with the Kontrol S-Series MK3](https://support.native-instruments.com/support/solutions/articles/69000879639-how-to-use-midi-templates-with-the-kontrol-s-series-mk3).
 
 ---
 
-# 14. Complete S49 Edition CC map
+# 14. Complete Kontrol S-Series MK3 Edition CC map
 
 | CC | Channel | Mode | Function |
 |---:|---:|---|---|
@@ -608,7 +608,7 @@ For the parameter rows, using **CH16** is recommended: Felucca routes it to the 
 
 # 15. Current limitations
 
-The S49 Edition currently virtualizes Felucca's **digital panel buttons and seven digital encoders**, plus the additional parameter CC pages.
+The Kontrol S-Series MK3 Edition currently virtualizes Felucca's **digital panel buttons and seven digital encoders**, plus the additional parameter CC pages.
 
 Two FM-1 hardware-specific areas are not yet virtualized:
 
@@ -626,7 +626,7 @@ Everything listed in the CC tables above is implemented in the custom firmware.
 
 Open:
 
-**Actions → Build Felucca S49 Edition → Run workflow**
+**Actions → Build Felucca Kontrol S-Series MK3 Edition → Run workflow**
 
 When the job is green, download the artifact:
 
@@ -639,35 +639,35 @@ Inside it is:
 The workflow:
 
 1. clones the pinned Felucca 1.0.5.2 source
-2. applies the S49 Edition patch
+2. applies the Kontrol S-Series MK3 Edition patch
 3. builds the firmware
-4. runs Felucca host tests, including S49 control tests
+4. runs Felucca host tests, including Kontrol control tests
 5. builds the release package
 6. uploads the installable `.fwsc`
 
 ---
 
-# 17. Install the S49 Edition firmware
+# 17. Install the Kontrol S-Series MK3 Edition firmware
 
-The firmware package (`.fwsc`) is installed on the **FM-1**. The MIDI template (`.kmt`) is imported separately on the **S49**, as described in section 13.
+The firmware package (`.fwsc`) is installed on the **FM-1**. The MIDI template (`.kmt`) is imported separately on the **Kontrol**, as described in section 13.
 
 ### 1. Download the custom firmware
 
 1. Open this repository's [Actions](https://github.com/1bitfromdend/Felucca-KONTROL-MIDI/actions).
-2. Select a successful **Build Felucca S49 Edition** run. Choose a firmware build, not a documentation-only commit.
+2. Select a successful **Build Felucca Kontrol S-Series MK3 Edition** run. Choose a firmware build, not a documentation-only commit.
 3. Under **Artifacts**, download **`felucca-1.0.5.2-s49`**. GitHub may require you to sign in.
 4. Extract the ZIP. The file to install is **`felucca-1.0.5.2-s49.fwsc`**.
 5. Download the [official Python installer matching the pinned Felucca source](https://raw.githubusercontent.com/hugelton/Felucca/7414269c4392cde8f4a4351c5f566314903b9116/tools/fm1_install.py) and save it as **`fm1_install.py`**.
 6. Put both files in the same folder, for example a folder named **`Felucca-KONTROL-MIDI`** on your Desktop.
 
-Use the artifact from **this repository** to install S49 Edition. Installing the ordinary upstream Felucca release instead does not include this project's remote-control patch.
+Use the artifact from **this repository** to install Kontrol S-Series MK3 Edition. Installing the ordinary upstream Felucca release instead does not include this project's remote-control patch.
 
 ### 2. Connect the FM-1
 
 - Install Python 3 if it is not already available.
 - Close DAWs, MIDI monitors, browser MIDI editors and other applications that may hold the FM-1 MIDI ports.
 - Connect the **FM-1 directly to the computer with a USB data cable** and power it on.
-- Firmware installation uses **USB-MIDI**, not the S49 → FM-1 DIN/TRS performance connection.
+- Firmware installation uses **USB-MIDI**, not the Kontrol → FM-1 DIN/TRS performance connection.
 - Keep USB and power connected throughout the write and automatic restart.
 
 ### 3. macOS / Linux terminal commands
@@ -712,10 +712,10 @@ No PowerShell environment activation is needed for these commands. If your Deskt
 ### 5. Verify and start playing
 
 1. The FM-1 should restart and show **S49 EDITION in red** under the original Felucca splash.
-2. If needed, check its identity again with `python fm1_install.py --info` (or the Windows interpreter command above). The installer's technical package identity remains the upstream identity; the splash and custom control behaviour distinguish S49 Edition.
-3. Load the included **FM-01** template on the S49.
-4. Reconnect the S49 MIDI OUT → FM-1 MIDI IN performance connection and set **`ROUT=SEL`** on Felucca.
-5. Test HOME, TRACK and PRESET from S49 page 1, then PLAY / REC and the direct controls on page 2.
+2. If needed, check its identity again with `python fm1_install.py --info` (or the Windows interpreter command above). The installer's technical package identity remains the upstream identity; the splash and custom control behaviour distinguish Kontrol S-Series MK3 Edition.
+3. Load the included **FM-01** template on the Kontrol.
+4. Reconnect the Kontrol MIDI OUT → FM-1 MIDI IN performance connection and set **`ROUT=SEL`** on Felucca.
+5. Test HOME, TRACK and PRESET from Kontrol page 1, then PLAY / REC and the direct controls on page 2.
 
 ### Port selection and troubleshooting
 
@@ -749,14 +749,14 @@ If the FM-1 cannot start and appears as **WL80UBOOT**, see the [upstream recover
 
 # 18. Upstream
 
-Felucca S49 Edition is based on the upstream **Felucca 1.0.5.2** firmware by Hügelton Instruments.
+Felucca Kontrol S-Series MK3 Edition is based on the upstream **Felucca 1.0.5.2** firmware by Hügelton Instruments.
 
 - Upstream repository: https://github.com/hugelton/Felucca
 - Upstream version: `1.0.5.2`
 - Upstream commit: `7414269c4392cde8f4a4351c5f566314903b9116`
 
-The build workflow always downloads this exact upstream commit before applying the S49 Edition patch, so builds remain reproducible and independent from later upstream changes.
+The build workflow always downloads this exact upstream commit before applying the Kontrol S-Series MK3 Edition patch, so builds remain reproducible and independent from later upstream changes.
 
 This project is an independent community modification and is **not officially affiliated with, endorsed by, or supported by Hügelton Instruments, Native Instruments, or M-VAVE**.
 
-Felucca remains the work of its original authors. This repository adds the S49-specific MIDI-control modifications, tests and build automation.
+Felucca remains the work of its original authors. This repository adds the Kontrol S-Series MK3-specific MIDI-control modifications, tests and build automation.
