@@ -8,6 +8,7 @@ panel = src / "panel.c"
 ui_input = src / "ui_input.c"
 ui_layer = src / "ui_layer.c"
 main = src / "main.c"
+ui_draw = src / "ui_draw.c"
 test = root / "upstream" / "tests" / "midi_control_test.c"
 
 s = midi.read_text()
@@ -251,7 +252,20 @@ if "fm1_in.buttons" not in l:
 l = l.replace("fm1_in.buttons", "panel_buttons()")
 ui_layer.write_text(l)
 
-# The splash rendering moved upstream; preserve the official boot screen.
+# Since 1.1.5 the boot splash lives in ui_draw.c. Preserve Felucca's
+# credits and version, and add the Kontrol Edition mark below the 176px square.
+d = ui_draw.read_text()
+begin = d.find("static void draw_splash(void)")
+end = d.find("/* UPDATE MODE countdown", begin)
+if begin < 0 or end < 0:
+    raise SystemExit("ui_draw.c Felucca 1.1.5.1 splash anchors not found")
+segment = d[begin:end]
+needle = "    lcd_sync();"
+if segment.count(needle) != 1:
+    raise SystemExit("ui_draw.c splash sync anchor not unique")
+segment = segment.replace(needle, '    draw_text_box(0, 216, 240, &AF_S, "S49 EDITION", T_REC, 1);\\n    lcd_sync();'.replace("\\\\n", "\\n"), 1)
+d = d[:begin] + segment + d[end:]
+ui_draw.write_text(d)
 
 t = test.read_text()
 reset_anchor = '''    fm1_in.notes = kb_prev = 0; fm1_ms = 0; song.sel = 0;
