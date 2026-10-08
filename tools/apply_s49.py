@@ -263,9 +263,19 @@ segment = d[begin:end]
 needle = "    lcd_sync();"
 if segment.count(needle) != 1:
     raise SystemExit("ui_draw.c splash sync anchor not unique")
-segment = segment.replace(needle, '    draw_text_box(SPL_X0, SPL_X0 + SPL_SQ / 2u - AF_S.h / 2u, SPL_SQ, &AF_S, "KONTROL EDITION", T_REC, 1);\n    lcd_sync();', 1)
+segment = segment.replace(needle, '    draw_text_line(SPL_X0 + SPL_PAD, SPL_X0 + SPL_SQ / 2u - AF_S.h / 2u, SPL_SQ - 2u * SPL_PAD, &AF_S, "KONTROL EDITION", T_REC, T_RAISE, 1);\n    lcd_sync();', 1)
 d = d[:begin] + segment + d[end:]
 ui_draw.write_text(d)
+
+# This is an intentionally modified splash: the upstream screenshot/render
+# check must expect the additional fifth line after the original credits.
+render_test = root / "upstream" / "tests" / "ui_render.c"
+v = render_test.read_text()
+expect_old = 'with community";'
+if v.count(expect_old) != 1:
+    raise SystemExit("ui_render.c splash expectation anchor missing or ambiguous")
+v = v.replace(expect_old, 'with community|KONTROL EDITION";', 1)
+render_test.write_text(v)
 
 t = test.read_text()
 reset_anchor = '''    fm1_in.notes = kb_prev = 0; fm1_ms = 0; song.sel = 0;
