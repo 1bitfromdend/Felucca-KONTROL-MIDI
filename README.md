@@ -1,6 +1,6 @@
 # Felucca-KONTROL-MIDI
 
-Full MIDI remote-control patch for **Native Instruments Kontrol S-Series MK3 (S49 MK3 / S61 MK3 / S88 MK3) + M-VAVE FM-1 running Felucca 1.0.5.2**.
+Full MIDI remote-control patch for **Native Instruments Kontrol S-Series MK3 (S49 MK3 / S61 MK3 / S88 MK3) + M-VAVE FM-1 running Felucca 1.1.5.1**.
 
 The purpose of this build is to use a Kontrol S-Series MK3 keyboard as the main performance and editing surface for Felucca:
 
@@ -10,9 +10,33 @@ The purpose of this build is to use a Kontrol S-Series MK3 keyboard as the main 
 - reproduce the FM-1's seven digital encoders over MIDI
 - keep Felucca's original MIDI behaviour, including sustain, pitch bend, aftertouch and modulation
 
-The repository stores the firmware patch, build workflow and ready-to-import Kontrol S-Series MK3 MIDI template. The same MIDI control architecture applies to **S49 MK3, S61 MK3 and S88 MK3**; the number of keys does not affect the CC/button/encoder mapping. GitHub Actions downloads the exact upstream Felucca 1.0.5.2 commit, applies the patch, runs the host tests and produces an installable `.fwsc`.
+The repository stores the firmware patch, build workflow and ready-to-import Kontrol S-Series MK3 MIDI template. The same MIDI control architecture applies to **S49 MK3, S61 MK3 and S88 MK3**; the number of keys does not affect the CC/button/encoder mapping. GitHub Actions downloads the exact upstream Felucca 1.1.5.1 commit, applies the patch, runs the host tests and produces an installable `.fwsc`.
 
-The custom build also identifies itself visually at boot with **S49 EDITION** under the original Felucca splash screen. The technical package identity used by the installer is left unchanged.
+The custom build identifies itself at boot with **KONTROL EDITION** in red, inside the original centred 176 × 176-pixel Felucca splash on the FM-1's 240 × 240 display. The official Felucca/version/credits remain visible. The technical package identity used by the installer is unchanged.
+
+## Current release — tested on hardware (2026-10-08)
+
+**Felucca 1.1.5.1 KONTROL EDITION** is the current version in `main`. The [verified build #27](https://github.com/1bitfromdend/Felucca-KONTROL-MIDI/actions/runs/37806364726) completed all GitHub Actions checks, including firmware compilation, splash UI preflight, Felucca host tests, and upload of the installable artifact. [Build #26](https://github.com/1bitfromdend/Felucca-KONTROL-MIDI/actions/runs/37806346527) also passed.
+
+**Physical test configuration:** M-VAVE FM-1, Native Instruments **Kontrol S49 MK3**, `FM-01.kmt` template, Kontrol MIDI OUT to FM-1 TRS MIDI IN, Felucca `ROUT=SEL`. The firmware was installed with the Python installer on Windows; `py -3.12 fm1_install.py --info` identified the device as `FM-1_910 [running]` on `Felucca 0` before flashing.
+
+The following controls were tested on hardware and reported working:
+
+| Area | Verified behaviour |
+|---|---|
+| Installation / boot | Firmware starts; red `KONTROL EDITION` splash appears |
+| Keyboard and routing | S49 keys play the selected Felucca track with `ROUT=SEL` |
+| Navigation | TRACK selects tracks 1–4; PRESET browses sounds |
+| Contextual encoders | KNOB1–4 adjust the currently shown HOME parameters |
+| Page navigation | ENV, FX, LFO, EDIT, GLO and HOME open/return to the expected pages |
+| Hold | Holding HOME opens Felucca's menu |
+| Sound editing | ATTACK and RELEASE respond from the S49 parameter page |
+| Sequencer | PLAY and REC controls respond |
+| Menu navigation | OCT− and OCT+ operate back/confirm where applicable |
+
+**Scope of validation:** these are the functions actually checked with the S49 MK3. Other supported controller mappings and gestures are covered by source/host tests or documented as implemented but have not all been exercised on physical hardware. S61 MK3 and S88 MK3 use the same MIDI control protocol but were not physically tested. The previous Felucca 1.0.5.2 version remains available in the [archive/felucca-1.0.5.2-kontrol](https://github.com/1bitfromdend/Felucca-KONTROL-MIDI/tree/archive/felucca-1.0.5.2-kontrol) branch.
+
+---
 
 ---
 
@@ -20,7 +44,7 @@ The custom build also identifies itself visually at boot with **S49 EDITION** un
 
 ### Musical tracks
 
-Felucca 1.0.5.2 has two routing modes:
+Felucca 1.1.5.1 has two routing modes:
 
 | ROUT mode | Musical MIDI routing |
 |---|---|
@@ -306,7 +330,7 @@ The following physical-panel model is therefore retained:
 
 # 9. Quick-layer reference
 
-Felucca 1.0.5.2 has four quick layers. They can be opened by holding the corresponding button, and 1.0.5.2 also adds the upstream double-tap lock gesture.
+Felucca 1.1.5.1 has four quick layers. They can be opened by holding the corresponding button, and 1.1.5.1 also adds the upstream double-tap lock gesture.
 
 The virtual S49 buttons preserve press, hold and release state, so the same hold and double-tap layer behaviour is available from the S49.
 
@@ -546,7 +570,7 @@ Sections 3 and 14 list the complete firmware CC map. The included template has t
 
 ### Hardware checks
 
-The flashed Kontrol S-Series MK3 Edition firmware was physically checked on a **Kontrol S49 MK3** through MIDI OUT → FM-1 TRS MIDI IN: note playback, direct Attack control, HOME tap and hold, track selection, preset browsing and `ROUT=SEL` selected-track playback. The template's assignments and embedded image data URL have been validated as JSON; loading and rendering the artwork must be checked on the target Kontrol model.
+**Felucca 1.1.5.1 KONTROL EDITION was physically tested on the S49 MK3 on 2026-10-08.** See the release/test matrix at the top of this README for the complete list of confirmed controls. The `FM-01.kmt` template was used for the checks. The physical test confirms the control mappings, not every possible combination of pages, quick-layer gestures or parameter engines; S61/S88 compatibility is by shared S-Series MK3 MIDI protocol rather than a separate hardware test.
 
 NI reference: [How to use MIDI Templates with the Kontrol S-Series MK3](https://support.native-instruments.com/support/solutions/articles/69000879639-how-to-use-midi-templates-with-the-kontrol-s-series-mk3).
 
@@ -628,17 +652,17 @@ Open:
 
 **Actions → Build Felucca Kontrol S-Series MK3 Edition → Run workflow**
 
-When the job is green, download the artifact:
+When the job is green, download the artifact (the `s49` suffix is retained in the **package filename for backward compatibility**, although this is **KONTROL EDITION** for all Kontrol S-Series MK3 keyboards):
 
-`felucca-1.0.5.2-s49`
+`felucca-1.1.5.1-s49`
 
 Inside it is:
 
-`felucca-1.0.5.2-s49.fwsc`
+`felucca-1.1.5.1-s49.fwsc`
 
 The workflow:
 
-1. clones the pinned Felucca 1.0.5.2 source
+1. clones the pinned Felucca 1.1.5.1 source
 2. applies the Kontrol S-Series MK3 Edition patch
 3. builds the firmware
 4. runs Felucca host tests, including Kontrol control tests
@@ -654,10 +678,10 @@ The firmware package (`.fwsc`) is installed on the **FM-1**. The MIDI template (
 ### 1. Download the custom firmware
 
 1. Open this repository's [Actions](https://github.com/1bitfromdend/Felucca-KONTROL-MIDI/actions).
-2. Select a successful **Build Felucca Kontrol S-Series MK3 Edition** run. Choose a firmware build, not a documentation-only commit.
-3. Under **Artifacts**, download **`felucca-1.0.5.2-s49`**. GitHub may require you to sign in.
-4. Extract the ZIP. The file to install is **`felucca-1.0.5.2-s49.fwsc`**.
-5. Download the [official Python installer matching the pinned Felucca source](https://raw.githubusercontent.com/hugelton/Felucca/7414269c4392cde8f4a4351c5f566314903b9116/tools/fm1_install.py) and save it as **`fm1_install.py`**.
+2. Select a successful **Build Felucca Kontrol S-Series MK3 Edition** run. The [physically tested build #27](https://github.com/1bitfromdend/Felucca-KONTROL-MIDI/actions/runs/37806364726) is the release reference. Choose a firmware build, not a documentation-only commit.
+3. Under **Artifacts**, download **`felucca-1.1.5.1-s49`**. GitHub may require you to sign in.
+4. Extract the ZIP. The file to install is **`felucca-1.1.5.1-s49.fwsc`**.
+5. Use your existing working `fm1_install.py` if it recognises the FM-1 with `--info`; otherwise download the [official Python installer matching the pinned Felucca source](https://raw.githubusercontent.com/hugelton/Felucca/213df5a094c24d10706fdffd7fb46678c6f07eeb/tools/fm1_install.py) and save it as **`fm1_install.py`**.
 6. Put both files in the same folder, for example a folder named **`Felucca-KONTROL-MIDI`** on your Desktop.
 
 Use the artifact from **this repository** to install Kontrol S-Series MK3 Edition. Installing the ordinary upstream Felucca release instead does not include this project's remote-control patch.
@@ -690,12 +714,23 @@ python fm1_install.py --info
 Install the custom firmware:
 
 ```bash
-python fm1_install.py felucca-1.0.5.2-s49.fwsc
+python fm1_install.py felucca-1.1.5.1-s49.fwsc
 ```
 
 Read the installer prompt and confirm when asked. Wait for the package transfer, flash write, automatic restart and identity check to finish.
 
 ### 4. Windows PowerShell commands
+
+**Quick path if Python 3.12, `mido` and `python-rtmidi` are already installed** (as in the S49 MK3 hardware test): in PowerShell, open the folder containing `fm1_install.py` and the extracted `.fwsc`, then run:
+
+```powershell
+py -3.12 fm1_install.py --info
+py -3.12 fm1_install.py felucca-1.1.5.1-s49.fwsc
+```
+
+The `--info` step must detect the running FM-1 before installation. Close other MIDI applications, and do not disconnect the FM-1 during flashing.
+
+**Clean setup / isolated Python environment:**
 
 Open PowerShell and enter the folder containing the two downloaded files. This example uses the same Desktop folder:
 
@@ -704,14 +739,14 @@ cd "$env:USERPROFILE\Desktop\Felucca-KONTROL-MIDI"
 py -3 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install mido python-rtmidi
 .\.venv\Scripts\python.exe fm1_install.py --info
-.\.venv\Scripts\python.exe fm1_install.py felucca-1.0.5.2-s49.fwsc
+.\.venv\Scripts\python.exe fm1_install.py felucca-1.1.5.1-s49.fwsc
 ```
 
 No PowerShell environment activation is needed for these commands. If your Desktop is redirected, use its actual folder path. Confirm at the installer prompt and wait until installation finishes.
 
 ### 5. Verify and start playing
 
-1. The FM-1 should restart and show **S49 EDITION in red** under the original Felucca splash.
+1. The FM-1 should restart and show **KONTROL EDITION in red**, centred **inside** the original Felucca splash square.
 2. If needed, check its identity again with `python fm1_install.py --info` (or the Windows interpreter command above). The installer's technical package identity remains the upstream identity; the splash and custom control behaviour distinguish Kontrol S-Series MK3 Edition.
 3. Load the included **FM-01** template on the Kontrol.
 4. Reconnect the Kontrol MIDI OUT → FM-1 MIDI IN performance connection and set **`ROUT=SEL`** on Felucca.
@@ -723,7 +758,7 @@ The installer normally detects eligible FM-1 ports automatically. If necessary, 
 
 ```bash
 python fm1_install.py --info --port "Felucca"
-python fm1_install.py felucca-1.0.5.2-s49.fwsc --port "Felucca"
+python fm1_install.py felucca-1.1.5.1-s49.fwsc --port "Felucca"
 ```
 
 Replace `Felucca` with a name actually shown by your system. On Windows use `.\.venv\Scripts\python.exe` in place of `python`.
@@ -749,11 +784,11 @@ If the FM-1 cannot start and appears as **WL80UBOOT**, see the [upstream recover
 
 # 18. Upstream
 
-Felucca Kontrol S-Series MK3 Edition is based on the upstream **Felucca 1.0.5.2** firmware by Hügelton Instruments.
+Felucca Kontrol S-Series MK3 Edition is based on the upstream **Felucca 1.1.5.1** firmware by Hügelton Instruments.
 
 - Upstream repository: https://github.com/hugelton/Felucca
-- Upstream version: `1.0.5.2`
-- Upstream commit: `7414269c4392cde8f4a4351c5f566314903b9116`
+- Upstream version: `1.1.5.1`
+- Upstream commit: `213df5a094c24d10706fdffd7fb46678c6f07eeb`
 
 The build workflow always downloads this exact upstream commit before applying the Kontrol S-Series MK3 Edition patch, so builds remain reproducible and independent from later upstream changes.
 

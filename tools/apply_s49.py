@@ -8,6 +8,7 @@ panel = src / "panel.c"
 ui_input = src / "ui_input.c"
 ui_layer = src / "ui_layer.c"
 main = src / "main.c"
+ui_draw = src / "ui_draw.c"
 test = root / "upstream" / "tests" / "midi_control_test.c"
 
 s = midi.read_text()
@@ -37,7 +38,7 @@ s49_block = r'''/* Native Instruments Kontrol S49 MK3 direct-control map.
  *               Kontrol mode: Gate (127 while held, 0 on release)
  *
  * The panel channel is deliberately CH16: CH1..4 remain musical track channels.
- * Felucca 1.0.5.2 normally ignores CH5..16 in ROUT=CH1-4. The S49 Edition
+ * Felucca 1.1.5.1 normally ignores CH5..16 in ROUT=CH1-4. The S49 Edition
  * exempts only its own CH16 CC map from that filter, so the remote panel and
  * direct parameter pages keep working in either ROUT mode while ordinary
  * CH16 notes/controllers retain upstream behaviour. CH16 S49 parameters edit
@@ -155,7 +156,7 @@ replacement = s49_block + insert_before.replace(
 )
 s = s.replace(insert_before, replacement, 1)
 
-# Felucca 1.0.5.2 deliberately ignores CH5..16 while ROUT=CH1-4. Keep that
+# Felucca 1.1.5.1 deliberately ignores CH5..16 while ROUT=CH1-4. Keep that
 # upstream rule for ordinary MIDI, but allow the dedicated S49 CH16 CC map
 # through so the existing template and wiring remain valid in both ROUT modes.
 route_anchor = """static void __attribute__((noinline)) midi_event(uint32_t st, uint32_t ch, uint32_t d1, uint32_t d2)
@@ -181,37 +182,20 @@ midi.write_text(s)
 # panel abstraction boundary. This preserves Felucca's original page, layer,
 # tap/hold, dialog, transport and contextual-knob behaviour.
 p = panel.read_text()
-panel_anchor = '''static uint32_t panel_btn_of(uint32_t matrix_id)        /* label of a matrix button, NB if none */
-{
-    uint32_t b;
-    for (b = 0; b < NB; b++)
-        if (panel.btn[b] == matrix_id)
-            return b;
-    return NB;
-}
-
-/* steps of a role, + = clockwise */
+panel_anchor = '''/* steps of a role, + = clockwise */
+static uint8_t panel_moved;                     /* a knob turned since ui.c scr_input last looked (SCREEN OFF) */
 static int32_t panel_enc(uint32_t role)
 {
-    return fm1_enc_take(panel.enc[role]) * panel.dir[role];
+    int32_t s = fm1_enc_take(panel.enc[role]) * panel.dir[role];
+    if (s)
+        panel_moved = 1;
+    return s;
 }
 '''
 if panel_anchor not in p:
-    raise SystemExit("panel.c anchor not found")
-
-panel_replacement = '''static uint32_t panel_btn_of(uint32_t matrix_id)        /* label of a matrix button, NB if none */
-{
-    uint32_t b;
-    for (b = 0; b < NB; b++)
-        if (panel.btn[b] == matrix_id)
-            return b;
-    return NB;
-}
-
-#ifdef FELUCCA_S49_PANEL
-/* S49 virtual-panel state uses logical button ids in the same order as B_FX..B_OCTUP.
- * Convert them through the calibrated physical-panel table only at this boundary, so a
- * calibrated FM-1 and the S49 still address the same printed controls. */
+    raise SystemExit("panel.c v1.1.5.1 encoder anchor not found")
+panel_replacement = '''#ifdef FELUCCA_S49_PANEL
+/* CH16 Kontrol virtual panel shares the physical panel's logical button mapping. */
 static uint32_t s49_panel_matrix_bits(uint32_t logical)
 {
     uint32_t b, m = 0;
@@ -220,27 +204,35 @@ static uint32_t s49_panel_matrix_bits(uint32_t logical)
             m |= 1u << panel.btn[b];
     return m;
 }
-
 static uint32_t panel_buttons(void)
 {
     return fm1_in.buttons | s49_panel_matrix_bits(s49_panel_down);
 }
-
 static uint32_t panel_pressed_take(void)
 {
     return fm1_input_edges(0) | s49_panel_matrix_bits(s49_panel_take_pressed());
 }
-
-/* steps of a role, + = clockwise. The S49 uses Relative Offset: 65 = +1, 63 = -1. */
+/* steps of a role, + = clockwise */
+static uint8_t panel_moved;
 static int32_t panel_enc(uint32_t role)
 {
-    return fm1_enc_take(panel.enc[role]) * panel.dir[role] + s49_panel_enc_take(role);
+    int32_t s = fm1_enc_take(panel.enc[role]) * panel.dir[role] + s49_panel_enc_take(role);
+    if (s)
+        panel_moved = 1;
+    return s;
 }
 #else
-/* Standalone panel/settings host tests include panel.c without the MIDI engine. */
+static uint8_t panel_moved;
+/* Macro fallback: settings_test.c includes panel.c without declaring fm1_in.
+ * Expand these only in UI code where fm1_in is available. */
+#define panel_buttons() (fm1_in.buttons)
+#define panel_pressed_take() fm1_input_edges(0)
 static int32_t panel_enc(uint32_t role)
 {
-    return fm1_enc_take(panel.enc[role]) * panel.dir[role];
+    int32_t s = fm1_enc_take(panel.enc[role]) * panel.dir[role];
+    if (s)
+        panel_moved = 1;
+    return s;
 }
 #endif
 '''
@@ -260,17 +252,30 @@ if "fm1_in.buttons" not in l:
 l = l.replace("fm1_in.buttons", "panel_buttons()")
 ui_layer.write_text(l)
 
-m = main.read_text()
-splash_anchor = '''    draw_text_box(0, 94, 240, &AF_L, "FELUCCA", T_THEME, 1);
-    draw_text_box(0, 134, 240, &AF_S, "MULTI-ENGINE SYNTH", T_MID, 1);
-'''
-if splash_anchor not in m:
-    raise SystemExit("main.c splash anchor not found")
-m = m.replace(splash_anchor, '''    draw_text_box(0, 94, 240, &AF_L, "FELUCCA", T_THEME, 1);
-    draw_text_box(0, 134, 240, &AF_S, "MULTI-ENGINE SYNTH", T_MID, 1);
-    draw_text_box(0, 156, 240, &AF_S, "S49 EDITION", T_REC, 1);
-''', 1)
-main.write_text(m)
+# Since 1.1.5 the boot splash lives in ui_draw.c. Preserve Felucca's
+# credits and version, and add the KONTROL EDITION mark inside the 176px square.
+d = ui_draw.read_text()
+begin = d.find("static void draw_splash(void)")
+end = d.find("/* UPDATE MODE countdown", begin)
+if begin < 0 or end < 0:
+    raise SystemExit("ui_draw.c Felucca 1.1.5.1 splash anchors not found")
+segment = d[begin:end]
+needle = "    lcd_sync();"
+if segment.count(needle) != 1:
+    raise SystemExit("ui_draw.c splash sync anchor not unique")
+segment = segment.replace(needle, '    draw_text_line(SPL_X0 + SPL_PAD, SPL_X0 + SPL_SQ / 2u - AF_S.h / 2u, SPL_SQ - 2u * SPL_PAD, &AF_S, "KONTROL EDITION", T_REC, T_RAISE, 1);\n    lcd_sync();', 1)
+d = d[:begin] + segment + d[end:]
+ui_draw.write_text(d)
+
+# This is an intentionally modified splash: the upstream screenshot/render
+# check must expect the additional fifth line after the original credits.
+render_test = root / "upstream" / "tests" / "ui_render.c"
+v = render_test.read_text()
+expect_old = 'with community";'
+if v.count(expect_old) != 1:
+    raise SystemExit("ui_render.c splash expectation anchor missing or ambiguous")
+v = v.replace(expect_old, 'with community|KONTROL EDITION";', 1)
+render_test.write_text(v)
 
 t = test.read_text()
 reset_anchor = '''    fm1_in.notes = kb_prev = 0; fm1_ms = 0; song.sel = 0;
@@ -331,6 +336,12 @@ test_block = test_anchor + r'''    {
     }
 '''
 t = t.replace(test_anchor, test_block, 1)
+# Upstream's "unknown CC" check uses CC20, now intentionally claimed by our
+# HOME 1 mapping. Test genuinely unassigned CC54 instead.
+unknown_cc = "queued(0xB0, 20, 99, 1); queued(0xB0, 76, 99, 1); queued(0xB0, 95, 99, 1);"
+if unknown_cc not in t:
+    raise SystemExit("midi_control_test.c unknown CC anchor not found")
+t = t.replace(unknown_cc, "queued(0xB0, 54, 99, 1); queued(0xB0, 76, 99, 1); queued(0xB0, 95, 99, 1);", 1)
 test.write_text(t)
 
 print("Applied Felucca S49 Edition full-panel patch")

@@ -4,7 +4,7 @@ name: Build Felucca Kontrol S-Series MK3 Edition
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, port-felucca-1.1.5.1]
     paths:
       - ".github/workflows/build-s49.yml"
       - "tools/apply_s49.py"
@@ -17,10 +17,10 @@ jobs:
       - name: Checkout Kontrol S-Series MK3 patch repository
         uses: actions/checkout@v5
 
-      - name: Checkout pinned Felucca 1.0.5.2 source
+      - name: Checkout pinned Felucca 1.1.5.1 source
         run: |
           git clone https://github.com/hugelton/Felucca.git upstream
-          git -C upstream checkout 7414269c4392cde8f4a4351c5f566314903b9116
+          git -C upstream checkout 213df5a094c24d10706fdffd7fb46678c6f07eeb
           python3 tools/apply_s49.py
 
       - name: Python build dependencies
@@ -61,6 +61,23 @@ jobs:
           cd upstream
           ./build.sh
 
+      - name: Preflight splash screen and report UI lint findings
+        run: |
+          cd upstream
+          FV=$(sed -n 's/^#define FELUCCA_VERSION "\([^"]*\)".*/\1/p' firmware/src/felucca.c)
+          cc -O1 -w "-DFELUCCA_VERSION=\"$FV\"" -Ibuild/gen -Ifirmware/src -Itests -o build/splash_ui_preflight tests/ui_render.c -lm
+          mkdir -p build/ui_probe/ppm build/ui_slot_probe
+          set +e
+          build/splash_ui_preflight build/ui_probe build/ui_slot_probe >build/splash_preflight.log 2>&1
+          rc=$?
+          set -e
+          tail -n 12 build/splash_preflight.log
+          if [ "$rc" -ne 0 ]; then
+            echo "---- SPLASH LINT DETAILS ----"
+            grep -E '^(LINT|FIND)' build/ui_probe/report.txt | head -n 100 || true
+          fi
+          exit "$rc"
+
       - name: Run Felucca host tests
         run: |
           cd upstream
@@ -69,12 +86,12 @@ jobs:
       - name: Build release firmware
         run: |
           cd upstream
-          ./build.sh --release 1.0.5.2
-          cp build/felucca-1.0.5.2.fwsc build/felucca-1.0.5.2-s49.fwsc
+          ./build.sh --release 1.1.5.1
+          cp build/felucca-1.1.5.1.fwsc build/felucca-1.1.5.1-s49.fwsc
 
       - name: Upload installable firmware
         uses: actions/upload-artifact@v7
         with:
-          name: felucca-1.0.5.2-s49
-          path: upstream/build/felucca-1.0.5.2-s49.fwsc
+          name: felucca-1.1.5.1-s49
+          path: upstream/build/felucca-1.1.5.1-s49.fwsc
           if-no-files-found: error
