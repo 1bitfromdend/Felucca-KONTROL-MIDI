@@ -263,7 +263,7 @@ segment = d[begin:end]
 needle = "    lcd_sync();"
 if segment.count(needle) != 1:
     raise SystemExit("ui_draw.c splash sync anchor not unique")
-segment = segment.replace(needle, '    draw_text_box(0, 216, 240, &AF_S, "S49 EDITION", T_REC, 1);\\n    lcd_sync();'.replace("\\\\n", "\\n"), 1)
+segment = segment.replace(needle, '    draw_text_box(0, 216, 240, &AF_S, "S49 EDITION", T_REC, 1);\n    lcd_sync();', 1)
 d = d[:begin] + segment + d[end:]
 ui_draw.write_text(d)
 
