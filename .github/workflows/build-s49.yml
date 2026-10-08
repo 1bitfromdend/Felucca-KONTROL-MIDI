@@ -4,7 +4,7 @@ name: Build Felucca Kontrol S-Series MK3 Edition
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, port-felucca-1.1.5.1]
     paths:
       - ".github/workflows/build-s49.yml"
       - "tools/apply_s49.py"
@@ -17,10 +17,10 @@ jobs:
       - name: Checkout Kontrol S-Series MK3 patch repository
         uses: actions/checkout@v5
 
-      - name: Checkout pinned Felucca 1.0.5.2 source
+      - name: Checkout pinned Felucca 1.1.5.1 source
         run: |
           git clone https://github.com/hugelton/Felucca.git upstream
-          git -C upstream checkout 7414269c4392cde8f4a4351c5f566314903b9116
+          git -C upstream checkout 213df5a094c24d10706fdffd7fb46678c6f07eeb
           python3 tools/apply_s49.py
 
       - name: Python build dependencies
@@ -69,12 +69,12 @@ jobs:
       - name: Build release firmware
         run: |
           cd upstream
-          ./build.sh --release 1.0.5.2
-          cp build/felucca-1.0.5.2.fwsc build/felucca-1.0.5.2-s49.fwsc
+          ./build.sh --release 1.1.5.1
+          cp build/felucca-1.1.5.1.fwsc build/felucca-1.1.5.1-s49.fwsc
 
       - name: Upload installable firmware
         uses: actions/upload-artifact@v7
         with:
-          name: felucca-1.0.5.2-s49
-          path: upstream/build/felucca-1.0.5.2-s49.fwsc
+          name: felucca-1.1.5.1-s49
+          path: upstream/build/felucca-1.1.5.1-s49.fwsc
           if-no-files-found: error
