@@ -61,6 +61,23 @@ jobs:
           cd upstream
           ./build.sh
 
+      - name: Preflight splash screen and report UI lint findings
+        run: |
+          cd upstream
+          FV=$(sed -n 's/^#define FELUCCA_VERSION "\([^"]*\)".*/\1/p' firmware/src/felucca.c)
+          cc -O1 -w "-DFELUCCA_VERSION=\\"$FV\\"" -Ibuild/gen -Ifirmware/src -Itests -o build/splash_ui_preflight tests/ui_render.c -lm
+          mkdir -p build/ui_probe build/ui_slot_probe
+          set +e
+          build/splash_ui_preflight build/ui_probe build/ui_slot_probe >build/splash_preflight.log 2>&1
+          rc=$?
+          set -e
+          tail -n 12 build/splash_preflight.log
+          if [ "$rc" -ne 0 ]; then
+            echo "---- SPLASH LINT DETAILS ----"
+            grep -E '^(LINT|FIND)' build/ui_probe/report.txt | head -n 100 || true
+          fi
+          exit "$rc"
+
       - name: Run Felucca host tests
         run: |
           cd upstream
