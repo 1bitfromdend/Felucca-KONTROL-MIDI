@@ -222,8 +222,10 @@ static int32_t panel_enc(uint32_t role)
 }
 #else
 static uint8_t panel_moved;
-static uint32_t panel_buttons(void) { return fm1_in.buttons; }
-static uint32_t panel_pressed_take(void) { return fm1_input_edges(0); }
+/* Macro fallback: settings_test.c includes panel.c without declaring fm1_in.
+ * Expand these only in UI code where fm1_in is available. */
+#define panel_buttons() (fm1_in.buttons)
+#define panel_pressed_take() fm1_input_edges(0)
 static int32_t panel_enc(uint32_t role)
 {
     int32_t s = fm1_enc_take(panel.enc[role]) * panel.dir[role];
@@ -310,6 +312,12 @@ test_block = test_anchor + r'''    {
     }
 '''
 t = t.replace(test_anchor, test_block, 1)
+# Upstream's "unknown CC" check uses CC20, now intentionally claimed by our
+# HOME 1 mapping. Test genuinely unassigned CC54 instead.
+unknown_cc = "queued(0xB0, 20, 99, 1); queued(0xB0, 76, 99, 1); queued(0xB0, 95, 99, 1);"
+if unknown_cc not in t:
+    raise SystemExit("midi_control_test.c unknown CC anchor not found")
+t = t.replace(unknown_cc, "queued(0xB0, 54, 99, 1); queued(0xB0, 76, 99, 1); queued(0xB0, 95, 99, 1);", 1)
 test.write_text(t)
 
 print("Applied Felucca S49 Edition full-panel patch")
