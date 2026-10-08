@@ -65,7 +65,7 @@ jobs:
         run: |
           cd upstream
           FV=$(sed -n 's/^#define FELUCCA_VERSION "\([^"]*\)".*/\1/p' firmware/src/felucca.c)
-          cc -O1 -w "-DFELUCCA_VERSION=\\"$FV\\"" -Ibuild/gen -Ifirmware/src -Itests -o build/splash_ui_preflight tests/ui_render.c -lm
+          cc -O1 -w "-DFELUCCA_VERSION=\"$FV\"" -Ibuild/gen -Ifirmware/src -Itests -o build/splash_ui_preflight tests/ui_render.c -lm
           mkdir -p build/ui_probe build/ui_slot_probe
           set +e
           build/splash_ui_preflight build/ui_probe build/ui_slot_probe >build/splash_preflight.log 2>&1
