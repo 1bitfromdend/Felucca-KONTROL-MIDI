@@ -253,7 +253,7 @@ l = l.replace("fm1_in.buttons", "panel_buttons()")
 ui_layer.write_text(l)
 
 # Since 1.1.5 the boot splash lives in ui_draw.c. Preserve Felucca's
-# credits and version, and add the Kontrol Edition mark below the 176px square.
+# credits and version, and add the KONTROL EDITION mark inside the 176px square.
 d = ui_draw.read_text()
 begin = d.find("static void draw_splash(void)")
 end = d.find("/* UPDATE MODE countdown", begin)
@@ -263,7 +263,7 @@ segment = d[begin:end]
 needle = "    lcd_sync();"
 if segment.count(needle) != 1:
     raise SystemExit("ui_draw.c splash sync anchor not unique")
-segment = segment.replace(needle, '    draw_text_box(SPL_X0, SPL_X0 + SPL_SQ / 2u - AF_S.h / 2u, SPL_SQ, &AF_S, "S49 EDITION", T_REC, 1);\n    lcd_sync();', 1)
+segment = segment.replace(needle, '    draw_text_box(SPL_X0, SPL_X0 + SPL_SQ / 2u - AF_S.h / 2u, SPL_SQ, &AF_S, "KONTROL EDITION", T_REC, 1);\n    lcd_sync();', 1)
 d = d[:begin] + segment + d[end:]
 ui_draw.write_text(d)
 
