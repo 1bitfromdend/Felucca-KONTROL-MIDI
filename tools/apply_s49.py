@@ -193,7 +193,8 @@ static int32_t panel_enc(uint32_t role)
 '''
 if panel_anchor not in p:
     raise SystemExit("panel.c v1.1.5.1 encoder anchor not found")
-panel_replacement = '''/* CH16 Kontrol virtual panel shares the physical panel's logical button mapping. */
+panel_replacement = '''#ifdef FELUCCA_S49_PANEL
+/* CH16 Kontrol virtual panel shares the physical panel's logical button mapping. */
 static uint32_t s49_panel_matrix_bits(uint32_t logical)
 {
     uint32_t b, m = 0;
@@ -219,6 +220,18 @@ static int32_t panel_enc(uint32_t role)
         panel_moved = 1;
     return s;
 }
+#else
+static uint8_t panel_moved;
+static uint32_t panel_buttons(void) { return fm1_in.buttons; }
+static uint32_t panel_pressed_take(void) { return fm1_input_edges(0); }
+static int32_t panel_enc(uint32_t role)
+{
+    int32_t s = fm1_enc_take(panel.enc[role]) * panel.dir[role];
+    if (s)
+        panel_moved = 1;
+    return s;
+}
+#endif
 '''
 p = p.replace(panel_anchor, panel_replacement, 1)
 panel.write_text(p)
