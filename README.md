@@ -12,7 +12,7 @@ The purpose of this build is to use a Kontrol S-Series MK3 keyboard as the main 
 
 The repository stores the firmware patch, build workflow and ready-to-import Kontrol S-Series MK3 MIDI template. The same MIDI control architecture applies to **S49 MK3, S61 MK3 and S88 MK3**; the number of keys does not affect the CC/button/encoder mapping. GitHub Actions downloads the exact upstream Felucca 1.1.5.1 commit, applies the patch, runs the host tests and produces an installable `.fwsc`.
 
-The custom build also identifies itself visually at boot with **S49 EDITION** under the original Felucca splash screen. The technical package identity used by the installer is left unchanged.
+The custom build also identifies itself visually at boot with **KONTROL EDITION** under the original Felucca splash screen. The technical package identity used by the installer is left unchanged.
 
 ---
 
@@ -711,7 +711,7 @@ No PowerShell environment activation is needed for these commands. If your Deskt
 
 ### 5. Verify and start playing
 
-1. The FM-1 should restart and show **S49 EDITION in red** under the original Felucca splash.
+1. The FM-1 should restart and show **KONTROL EDITION in red** under the original Felucca splash.
 2. If needed, check its identity again with `python fm1_install.py --info` (or the Windows interpreter command above). The installer's technical package identity remains the upstream identity; the splash and custom control behaviour distinguish Kontrol S-Series MK3 Edition.
 3. Load the included **FM-01** template on the Kontrol.
 4. Reconnect the Kontrol MIDI OUT → FM-1 MIDI IN performance connection and set **`ROUT=SEL`** on Felucca.
