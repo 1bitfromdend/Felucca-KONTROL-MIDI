@@ -37,7 +37,7 @@ s49_block = r'''/* Native Instruments Kontrol S49 MK3 direct-control map.
  *               Kontrol mode: Gate (127 while held, 0 on release)
  *
  * The panel channel is deliberately CH16: CH1..4 remain musical track channels.
- * Felucca 1.0.5.2 normally ignores CH5..16 in ROUT=CH1-4. The S49 Edition
+ * Felucca 1.1.5.1 normally ignores CH5..16 in ROUT=CH1-4. The S49 Edition
  * exempts only its own CH16 CC map from that filter, so the remote panel and
  * direct parameter pages keep working in either ROUT mode while ordinary
  * CH16 notes/controllers retain upstream behaviour. CH16 S49 parameters edit
@@ -155,7 +155,7 @@ replacement = s49_block + insert_before.replace(
 )
 s = s.replace(insert_before, replacement, 1)
 
-# Felucca 1.0.5.2 deliberately ignores CH5..16 while ROUT=CH1-4. Keep that
+# Felucca 1.1.5.1 deliberately ignores CH5..16 while ROUT=CH1-4. Keep that
 # upstream rule for ordinary MIDI, but allow the dedicated S49 CH16 CC map
 # through so the existing template and wiring remain valid in both ROUT modes.
 route_anchor = """static void __attribute__((noinline)) midi_event(uint32_t st, uint32_t ch, uint32_t d1, uint32_t d2)
@@ -181,37 +181,19 @@ midi.write_text(s)
 # panel abstraction boundary. This preserves Felucca's original page, layer,
 # tap/hold, dialog, transport and contextual-knob behaviour.
 p = panel.read_text()
-panel_anchor = '''static uint32_t panel_btn_of(uint32_t matrix_id)        /* label of a matrix button, NB if none */
-{
-    uint32_t b;
-    for (b = 0; b < NB; b++)
-        if (panel.btn[b] == matrix_id)
-            return b;
-    return NB;
-}
-
-/* steps of a role, + = clockwise */
+panel_anchor = '''/* steps of a role, + = clockwise */
+static uint8_t panel_moved;                     /* a knob turned since ui.c scr_input last looked (SCREEN OFF) */
 static int32_t panel_enc(uint32_t role)
 {
-    return fm1_enc_take(panel.enc[role]) * panel.dir[role];
+    int32_t s = fm1_enc_take(panel.enc[role]) * panel.dir[role];
+    if (s)
+        panel_moved = 1;
+    return s;
 }
 '''
 if panel_anchor not in p:
-    raise SystemExit("panel.c anchor not found")
-
-panel_replacement = '''static uint32_t panel_btn_of(uint32_t matrix_id)        /* label of a matrix button, NB if none */
-{
-    uint32_t b;
-    for (b = 0; b < NB; b++)
-        if (panel.btn[b] == matrix_id)
-            return b;
-    return NB;
-}
-
-#ifdef FELUCCA_S49_PANEL
-/* S49 virtual-panel state uses logical button ids in the same order as B_FX..B_OCTUP.
- * Convert them through the calibrated physical-panel table only at this boundary, so a
- * calibrated FM-1 and the S49 still address the same printed controls. */
+    raise SystemExit("panel.c v1.1.5.1 encoder anchor not found")
+panel_replacement = '''/* CH16 Kontrol virtual panel shares the physical panel's logical button mapping. */
 static uint32_t s49_panel_matrix_bits(uint32_t logical)
 {
     uint32_t b, m = 0;
@@ -220,29 +202,23 @@ static uint32_t s49_panel_matrix_bits(uint32_t logical)
             m |= 1u << panel.btn[b];
     return m;
 }
-
 static uint32_t panel_buttons(void)
 {
     return fm1_in.buttons | s49_panel_matrix_bits(s49_panel_down);
 }
-
 static uint32_t panel_pressed_take(void)
 {
     return fm1_input_edges(0) | s49_panel_matrix_bits(s49_panel_take_pressed());
 }
-
-/* steps of a role, + = clockwise. The S49 uses Relative Offset: 65 = +1, 63 = -1. */
+/* steps of a role, + = clockwise */
+static uint8_t panel_moved;
 static int32_t panel_enc(uint32_t role)
 {
-    return fm1_enc_take(panel.enc[role]) * panel.dir[role] + s49_panel_enc_take(role);
+    int32_t s = fm1_enc_take(panel.enc[role]) * panel.dir[role] + s49_panel_enc_take(role);
+    if (s)
+        panel_moved = 1;
+    return s;
 }
-#else
-/* Standalone panel/settings host tests include panel.c without the MIDI engine. */
-static int32_t panel_enc(uint32_t role)
-{
-    return fm1_enc_take(panel.enc[role]) * panel.dir[role];
-}
-#endif
 '''
 p = p.replace(panel_anchor, panel_replacement, 1)
 panel.write_text(p)
@@ -260,17 +236,7 @@ if "fm1_in.buttons" not in l:
 l = l.replace("fm1_in.buttons", "panel_buttons()")
 ui_layer.write_text(l)
 
-m = main.read_text()
-splash_anchor = '''    draw_text_box(0, 94, 240, &AF_L, "FELUCCA", T_THEME, 1);
-    draw_text_box(0, 134, 240, &AF_S, "MULTI-ENGINE SYNTH", T_MID, 1);
-'''
-if splash_anchor not in m:
-    raise SystemExit("main.c splash anchor not found")
-m = m.replace(splash_anchor, '''    draw_text_box(0, 94, 240, &AF_L, "FELUCCA", T_THEME, 1);
-    draw_text_box(0, 134, 240, &AF_S, "MULTI-ENGINE SYNTH", T_MID, 1);
-    draw_text_box(0, 156, 240, &AF_S, "S49 EDITION", T_REC, 1);
-''', 1)
-main.write_text(m)
+# The splash rendering moved upstream; preserve the official boot screen.
 
 t = test.read_text()
 reset_anchor = '''    fm1_in.notes = kb_prev = 0; fm1_ms = 0; song.sel = 0;
