@@ -135,6 +135,12 @@ static int s49_control(uint32_t ch, uint32_t cc, uint32_t value)
     if (id >= P_COUNT)
         return 0;
 
+    /* Upstream MIDI LEARN takes precedence on musical MIDI channels.
+     * CH16 remains a dedicated KONTROL remote: its CC layout must not be
+     * captured or redirected by MIDI LEARN assignments made elsewhere. */
+    if (ch != S49_PANEL_CH && midi_learned(cc, value))
+        return 1;
+
     /* 1.8: delegate scaling, motion capture and parameter notification
      * to the upstream MIDI CC setter rather than writing the value raw. */
     midi_cc_set(t, id, value);
@@ -350,6 +356,41 @@ unknown_cc = "queued(0xB0, 20, 99, 1); queued(0xB0, 76, 99, 1); queued(0xB0, 95,
 if unknown_cc not in t:
     raise SystemExit("midi_control_test.c unknown CC anchor not found")
 t = t.replace(unknown_cc, "queued(0xB0, 54, 99, 1); queued(0xB0, 76, 99, 1); queued(0xB0, 95, 99, 1);", 1)
+
+# Upstream test assumes CH16 is an ordinary unused MIDI channel, while this
+# edition reserves its KONTROL CCs even with TRACK and CH1-4 MIDI routing.
+# Test ordinary silent MIDI CH15 instead; preserve the musical routing check.
+track_test = 'queued(0xBF, 20, 0, 1);\n        ok &= trk[2].p[P_PAN] == TP[P_PAN].max;'
+if track_test not in t:
+    raise SystemExit("1.8 TRACK learned-CC test anchor missing")
+t = t.replace(track_test, 'queued(0xBE, 20, 0, 1);\n        ok &= trk[2].p[P_PAN] == TP[P_PAN].max;', 1)
+
+# Felucca 1.8's MIDI LEARN tests use CC20/21, both intentionally allocated to
+# the KONTROL's absolute HOME controls. Move those particular test messages to
+# unassigned CC54/55 so they test the same learned-CC behaviour without
+# assuming that our direct controls do not exist. Real CC20 learn precedence
+# on musical channels is independently covered by the TRACK test above.
+learn_start = t.find('static int learn_test(void)')
+if learn_start < 0:
+    raise SystemExit("1.8 MIDI LEARN test start missing")
+learn_end = t.find('\nstatic int ', learn_start + 1)
+if learn_end < 0:
+    raise SystemExit("1.8 MIDI LEARN test end missing")
+learn = t[learn_start:learn_end]
+for old, new in (
+    ('queued(0xB0, 20,', 'queued(0xB0, 54,'),
+    ('queued(0xB2, 20,', 'queued(0xB2, 54,'),
+    ('queued(0xB9, 20,', 'queued(0xB9, 54,'),
+    ('queued(0xB0, 21,', 'queued(0xB0, 55,'),
+    ('ml_entry(20,', 'ml_entry(54,'),
+    ('ml_entry(21,', 'ml_entry(55,'),
+    ('CC20', 'CC54'), ('CC21', 'CC55'),
+):
+    learn = learn.replace(old, new)
+# Check our updated test is still testing the CC54/55 learn, relearn and clear.
+if not all(x in learn for x in ('ml_entry(54, 0, P_E4)', 'ml_entry(55, 0, P_E5)', 'T1 CUT = CC54')):
+    raise SystemExit("1.8 MIDI LEARN adaptation incomplete")
+t = t[:learn_start] + learn + t[learn_end:]
 test.write_text(t)
 
 print("Applied Felucca 1.8 KONTROL EDITION experimental port; build and hardware tests required")
