@@ -1,10 +1,10 @@
-name: Build Felucca Kontrol S-Series MK3 Edition
-# retrigger
+name: Build Felucca 1.1.5.1 KONTROL Edition (legacy)
+# Historical 1.1.5.1 build: the active 1.8 workflow is build-s49-1_8.yml.
 
 on:
   workflow_dispatch:
   push:
-    branches: [main, port-felucca-1.1.5.1]
+    branches: [port-felucca-1.1.5.1]
     paths:
       - ".github/workflows/build-s49.yml"
       - "tools/apply_s49.py"
