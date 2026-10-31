@@ -128,7 +128,9 @@ static uint32_t s49_param_id(const track_t *t, uint32_t cc)
 
 static int s49_control(uint32_t ch, uint32_t cc, uint32_t value)
 {
-    track_t *t = midi_track(ch);
+    /* CH16 is the dedicated remote-control channel, regardless of
+     * 1.8's additional CH13-16 or TRACK/OMNI musical routing modes. */
+    track_t *t = ch == S49_PANEL_CH ? TSEL : midi_track(ch);
     uint32_t id = s49_param_id(t, cc);
     if (id >= P_COUNT)
         return 0;
@@ -329,6 +331,16 @@ test_block = test_anchor + r'''    {
         queued(0xBF, 93, 127, 1); ui_input();
         queued(0xBF, 93, 0, 1); ui_input();
         bad += check("S49 CH16 OCT+ behaves like the physical OCT+ button", song.octave == 1);
+
+        /* 1.8 MIDI CH13-16 mode must not divert the remote CC edits
+         * from the selected track to the musical channel's track. */
+        song.sel = 1;
+        song.g[G_ROUTE] = 4;
+        queued(0xBF, 106, 127, 1);
+        bad += check("KONTROL CH16 parameters still edit selected track in CH13-16 mode",
+                     trk[1].p[P_LEVEL] == param_desc_of(eng_idx(trk[1].eng_req), P_LEVEL)->max);
+        song.g[G_ROUTE] = 0;
+        song.sel = 0;
     }
 '''
 t = t.replace(test_anchor, test_block, 1)
