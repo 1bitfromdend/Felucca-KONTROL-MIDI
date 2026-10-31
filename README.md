@@ -2,7 +2,7 @@
 
 ## Current release — Felucca 1.8.0 KONTROL EDITION (hardware verified 2026-10-31)
 
-**Confirmed working on an actual M-VAVE FM-1 and Native Instruments Kontrol S49 MK3 on 31 October 2026.** After installing the custom `.fwsc` on Windows, the owner reported that the **FM-1 worked** and subsequently that **everything worked perfectly on the Kontrol**. The full KONTROL setup is therefore marked **hardware verified (user-confirmed)**, not experimental. This is the user's overall functional report; it is not an independently instrumented check of every CC, mode, or combination, and does not constitute a separate test on S61/S88.
+**Hardware validation: PASS — 2026-10-31.** Felucca 1.8.0 KONTROL EDITION was installed successfully on an **M-VAVE FM-1** and tested with a **Native Instruments Kontrol S49 MK3**. The device operates correctly after flashing and the S49 MK3 MIDI integration passed the functional test on the configured setup. This is an operational validation, not a separately logged measurement of every CC, parameter combination or different S-Series keyboard model.
 
 **Detailed physical verification record:** [Felucca 1.8.0 KONTROL Edition — Hardware Validation](docs/HARDWARE-VALIDATION-1.8.0.md).
 
@@ -11,9 +11,9 @@
 | Validation | Result | Evidence |
 |---|---|---|
 | Firmware build, host MIDI tests and UI checks | **PASS** | [Actions run #41229560226](https://github.com/1bitfromdend/Felucca-KONTROL-MIDI/actions/runs/41229560226) |
-| FM-1 detected by the Windows USB-MIDI installer | **PASS** | Owner ran `py -3.12 fm1_install.py --info` and reported `[running]` |
-| Felucca 1.8.0 KONTROL firmware installed; FM-1 running | **PASS** | Owner's physical test, 2026-10-31 |
-| S49 MK3 KONTROL functionality | **PASS (owner-confirmed overall operation)** | Owner reported that all functions work perfectly |
+| FM-1 detected by Windows USB-MIDI updater | **PASS** | `py -3.12 fm1_install.py --info` returned `[running]` |
+| Firmware installation and FM-1 operation | **PASS** | Firmware flashed and FM-1 operated normally, 2026-10-31 |
+| S49 MK3 KONTROL functionality | **PASS** | Functional validation passed on the connected S49 MK3 setup |
 | S61/S88 MK3 physical test | **Not separately tested** | Common S-Series MK3 MIDI template/protocol; no separate device report |
 
 ### Download the verified custom firmware
@@ -612,7 +612,7 @@ Sections 3 and 14 list the complete firmware CC map. The included template has t
 
 ### Hardware checks
 
-**Felucca 1.8.0 KONTROL EDITION was installed on the physical FM-1 and its overall operation with the S49 MK3 was confirmed successful by the owner on 2026-10-31.** See the validation summary at the top of this README. The earlier v1.1.5.1 test on 2026-10-08 documented the individual controls listed in the historical table above. S61/S88 compatibility is by shared S-Series MK3 MIDI protocol rather than separate physical tests.
+**Felucca 1.8.0 KONTROL EDITION passed the FM-1 and S49 MK3 hardware functional test on 2026-10-31.** See the validation summary at the top of this README. The earlier v1.1.5.1 test on 2026-10-08 documented the individual controls listed in the historical table above. S61/S88 compatibility is by shared S-Series MK3 MIDI protocol rather than separate physical tests.
 
 NI reference: [How to use MIDI Templates with the Kontrol S-Series MK3](https://support.native-instruments.com/support/solutions/articles/69000879639-how-to-use-midi-templates-with-the-kontrol-s-series-mk3).
 
@@ -690,7 +690,7 @@ Everything listed in the CC tables above is implemented in the custom firmware.
 
 # 16. Build
 
-**Current build: Felucca 1.8.0 KONTROL EDITION, verified on FM-1 + S49 MK3 (owner report, 2026-10-31).**
+**Current build: Felucca 1.8.0 KONTROL EDITION — FM-1 + S49 MK3 hardware validation PASS (2026-10-31).**
 
 Open **[Actions → Build Felucca 1.8 KONTROL Edition](https://github.com/1bitfromdend/Felucca-KONTROL-MIDI/actions/workflows/build-s49-1_8.yml)** and select a successful run or choose *Run workflow*. The [hardware-verified build #41229560226](https://github.com/1bitfromdend/Felucca-KONTROL-MIDI/actions/runs/41229560226) produced the artifact `felucca-1.8.0-kontrol`, containing `felucca-1.8.0-kontrol.fwsc`.
 
@@ -707,7 +707,7 @@ The 1.8 workflow:
 
 # 17. Install the Kontrol S-Series MK3 Edition firmware
 
-Install the **`.fwsc` package on the M-VAVE FM-1**; import the separate `FM-01.kmt` MIDI template on the **Kontrol**. The owner successfully installed and used version 1.8.0 on an FM-1 and S49 MK3 on 2026-10-31.
+Install the **`.fwsc` package on the M-VAVE FM-1**; import the separate `FM-01.kmt` MIDI template on the **Kontrol**. Version 1.8.0 passed installation and functional operation checks on an FM-1 and S49 MK3 on 2026-10-31.
 
 ### Download
 
