@@ -4,6 +4,8 @@
 
 **Confirmed working on an actual M-VAVE FM-1 and Native Instruments Kontrol S49 MK3 on 31 October 2026.** After installing the custom `.fwsc` on Windows, the owner reported that the **FM-1 worked** and subsequently that **everything worked perfectly on the Kontrol**. The full KONTROL setup is therefore marked **hardware verified (user-confirmed)**, not experimental. This is the user's overall functional report; it is not an independently instrumented check of every CC, mode, or combination, and does not constitute a separate test on S61/S88.
 
+**Detailed physical verification record:** [Felucca 1.8.0 KONTROL Edition — Hardware Validation](docs/HARDWARE-VALIDATION-1.8.0.md).
+
 **Automated validation also passed:** [GitHub Actions build #41229560226](https://github.com/1bitfromdend/Felucca-KONTROL-MIDI/actions/runs/41229560226) successfully compiled Felucca v1.8.0 with the KONTROL patch, ran the host/MIDI and UI regression suite and uploaded the installable firmware. The dedicated **CH16** virtual panel/encoder and direct parameter controls are included. The 1.8 source and workflow have been [merged into `main`](https://github.com/1bitfromdend/Felucca-KONTROL-MIDI/pull/2).
 
 | Validation | Result | Evidence |
