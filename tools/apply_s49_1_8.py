@@ -130,21 +130,12 @@ static int s49_control(uint32_t ch, uint32_t cc, uint32_t value)
 {
     track_t *t = midi_track(ch);
     uint32_t id = s49_param_id(t, cc);
-    const param_desc_t *d;
-    int32_t v;
-
     if (id >= P_COUNT)
         return 0;
 
-    d = track_desc(t, id);
-    if (!d || d->max < d->min)
-        return 1;
-
-    v = d->min + ((int32_t)(d->max - d->min) * (int32_t)value + 63) / 127;
-    if (d->fmt == F_ENUM)
-        v = enum_orig(d, v);
-
-    t->p[id] = (int16_t)clamp(v, d->min, d->max);
+    /* 1.8: delegate scaling, motion capture and parameter notification
+     * to the upstream MIDI CC setter rather than writing the value raw. */
+    midi_cc_set(t, id, value);
     return 1;
 }
 
@@ -263,7 +254,12 @@ segment = d[begin:end]
 needle = "    lcd_sync();"
 if segment.count(needle) != 1:
     raise SystemExit("ui_draw.c splash sync anchor not unique")
-segment = segment.replace(needle, '    draw_text_line(SPL_X0 + SPL_PAD, SPL_X0 + SPL_SQ / 2u - AF_S.h / 2u, SPL_SQ - 2u * SPL_PAD, &AF_S, "KONTROL EDITION", T_REC, T_RAISE, 1);\n    lcd_sync();', 1)
+segment = segment.replace(needle, '''    /* 1.8 renders the splash in a canvas: overlay a small centered band
+     * inside its 176px square after the two original credit bands. */
+    cv_begin(SPL_SQ, 20, T_RAISE);
+    cv_text_on(SPL_PAD, 4, &AF_S, "KONTROL EDITION", T_REC, T_RAISE);
+    cv_blit(SPL_X0, SPL_X0 + (SPL_SQ - 20u) / 2u);
+    lcd_sync();''', 1)
 d = d[:begin] + segment + d[end:]
 ui_draw.write_text(d)
 
