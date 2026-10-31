@@ -1,24 +1,28 @@
 # Felucca-KONTROL-MIDI
 
-## Felucca 1.8.0 KONTROL EDITION — experimental build (2026-10-31)
+## Current version — Felucca 1.8.0 KONTROL EDITION (2026-10-31)
 
-**The Felucca 1.8.0 S49 MK3 port exists on GitHub, but is not yet hardware-verified.** Its source and GitHub Actions workflow are on the [`port/felucca-1.8-kontrol` branch](https://github.com/1bitfromdend/Felucca-KONTROL-MIDI/tree/port/felucca-1.8-kontrol). The changes are proposed in [draft PR #2](https://github.com/1bitfromdend/Felucca-KONTROL-MIDI/pull/2). The [successful build and host-test run #41229560226](https://github.com/1bitfromdend/Felucca-KONTROL-MIDI/actions/runs/41229560226) produced the **`felucca-1.8.0-kontrol`** artifact. Extract the ZIP to get **`felucca-1.8.0-kontrol.fwsc`** (GitHub may require sign-in; Actions artifacts expire).
+**Felucca 1.8.0 KONTROL EDITION source code is integrated into `main`.** The S-Series MK3 MIDI remote-control port and its build workflow were merged in [PR #2](https://github.com/1bitfromdend/Felucca-KONTROL-MIDI/pull/2). The dedicated CH16 panel/encoder mapping is preserved, and the patch is adapted for Felucca 1.8's routing and MIDI Learn.
 
-The port preserves the dedicated S-Series MK3 CH16 control mapping, adjusts to Felucca 1.8's routing and MIDI Learn, and passes the upstream host/UI regression suite. **A successful CI build does not mean it has been flashed or tested on the FM-1/S49 hardware.**
+**Automated validation: passed.** [GitHub Actions run #41229560226](https://github.com/1bitfromdend/Felucca-KONTROL-MIDI/actions/runs/41229560226) compiled the firmware and passed the UI and Felucca host regression tests. Its downloadable artifact **`felucca-1.8.0-kontrol`** contains **`felucca-1.8.0-kontrol.fwsc`**. GitHub may require sign-in to retrieve the artifact, and artifacts are subject to expiration. Automated tests and on-device evaluation are different forms of verification; on-device results for version 1.8.0 are not recorded here.
 
-For an initial **Windows** hardware test using the already-working Python 3.12 installer environment, put the extracted `.fwsc` and the [Felucca v1.8.0 installer script](https://raw.githubusercontent.com/hugelton/Felucca/v1.8.0/tools/fm1_install.py) in one directory, connect the FM-1 directly over USB, close other MIDI applications, then check identity before making any changes:
+### Install with the existing Windows Python environment
+
+Use the firmware artifact from **this repository**, not the stock Felucca 1.8 release. Put `felucca-1.8.0-kontrol.fwsc` and the [official Felucca v1.8.0 `fm1_install.py`](https://raw.githubusercontent.com/hugelton/Felucca/v1.8.0/tools/fm1_install.py) in the same directory. Connect the FM-1 over USB, close other MIDI applications, and first check the connected device without flashing:
 
 ```powershell
 py -3.12 fm1_install.py --info
 ```
 
-Only after confirming the device identity and making backups, the separate *firmware-writing* command is:
+After confirming the device and backing up the relevant projects, the **separate command that writes the firmware** is:
 
 ```powershell
 py -3.12 fm1_install.py felucca-1.8.0-kontrol.fwsc
 ```
 
-**Stable / physically tested version remains Felucca 1.1.5.1 KONTROL EDITION**, described below and still the `main` source reference. Do not confuse its `felucca-1.1.5.1-s49.fwsc` file with the experimental 1.8 firmware.
+### Previous version — Felucca 1.1.5.1
+
+The older **1.1.5.1 KONTROL EDITION** was physically tested with an FM-1 and S49 MK3, as recorded below. Its source remains accessible through the repository history and [`port-felucca-1.1.5.1` branch](https://github.com/1bitfromdend/Felucca-KONTROL-MIDI/tree/port-felucca-1.1.5.1). The detailed historical mapping and installation guide below were originally written for 1.1.5.1; use the 1.8 artifact and command above for the current version.
 
 ---
 
@@ -36,9 +40,9 @@ The repository stores the firmware patch, build workflow and ready-to-import Kon
 
 The custom build identifies itself at boot with **KONTROL EDITION** in red, inside the original centred 176 × 176-pixel Felucca splash on the FM-1's 240 × 240 display. The official Felucca/version/credits remain visible. The technical package identity used by the installer is unchanged.
 
-## Current release — tested on hardware (2026-10-08)
+## Previous 1.1.5.1 release — tested on hardware (2026-10-08)
 
-**Felucca 1.1.5.1 KONTROL EDITION** is the current version in `main`. The [verified build #27](https://github.com/1bitfromdend/Felucca-KONTROL-MIDI/actions/runs/37806364726) completed all GitHub Actions checks, including firmware compilation, splash UI preflight, Felucca host tests, and upload of the installable artifact. [Build #26](https://github.com/1bitfromdend/Felucca-KONTROL-MIDI/actions/runs/37806346527) also passed.
+**Felucca 1.1.5.1 KONTROL EDITION** was the previous version, tested on the physical FM-1 and S49 MK3. The [verified build #27](https://github.com/1bitfromdend/Felucca-KONTROL-MIDI/actions/runs/37806364726) completed all GitHub Actions checks, including firmware compilation, splash UI preflight, Felucca host tests, and upload of the installable artifact. [Build #26](https://github.com/1bitfromdend/Felucca-KONTROL-MIDI/actions/runs/37806346527) also passed.
 
 **Physical test configuration:** M-VAVE FM-1, Native Instruments **Kontrol S49 MK3**, `FM-01.kmt` template, Kontrol MIDI OUT to FM-1 TRS MIDI IN, Felucca `ROUT=SEL`. The firmware was installed with the Python installer on Windows; `py -3.12 fm1_install.py --info` identified the device as `FM-1_910 [running]` on `Felucca 0` before flashing.
 
