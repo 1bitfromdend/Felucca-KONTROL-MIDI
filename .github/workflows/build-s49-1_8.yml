@@ -1,5 +1,5 @@
 name: Build Felucca 1.8 KONTROL Edition
-# Owner-confirmed hardware validation: M-VAVE FM-1 + Kontrol S49 MK3 (2026-10-31).
+# Hardware validation: PASS — M-VAVE FM-1 + Kontrol S49 MK3 (2026-10-31).
 # Upstream Felucca v1.8.0 is pinned.
 
 on:
