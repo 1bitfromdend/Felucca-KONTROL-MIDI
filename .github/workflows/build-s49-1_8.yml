@@ -86,11 +86,11 @@ jobs:
         run: |
           cd upstream
           ./build.sh --release 1.8.0
-          cp build/felucca-1.1.5.1.fwsc build/felucca-1.1.5.1-s49.fwsc
+          cp build/felucca-1.8.0.fwsc build/felucca-1.8.0-kontrol.fwsc
 
       - name: Upload installable firmware
         uses: actions/upload-artifact@v7
         with:
-          name: felucca-1.1.5.1-s49
-          path: upstream/build/felucca-1.1.5.1-s49.fwsc
+          name: felucca-1.8.0-kontrol
+          path: upstream/build/felucca-1.8.0-kontrol.fwsc
           if-no-files-found: error
