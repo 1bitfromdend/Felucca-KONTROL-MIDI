@@ -1,10 +1,11 @@
-name: Build Felucca 1.8 KONTROL Edition (experimental)
-# Experimental branch only: install only after hardware validation.
+name: Build Felucca 1.8 KONTROL Edition
+# Owner-confirmed hardware validation: M-VAVE FM-1 + Kontrol S49 MK3 (2026-10-31).
+# Upstream Felucca v1.8.0 is pinned.
 
 on:
   workflow_dispatch:
   push:
-    branches: [port/felucca-1.8-kontrol]
+    branches: [main, port/felucca-1.8-kontrol]
     paths:
       - ".github/workflows/build-s49-1_8.yml"
       - "tools/apply_s49_1_8.py"
