@@ -1,5 +1,27 @@
 # Felucca-KONTROL-MIDI
 
+## Felucca 1.8.0 KONTROL EDITION — experimental build (2026-10-31)
+
+**The Felucca 1.8.0 S49 MK3 port exists on GitHub, but is not yet hardware-verified.** Its source and GitHub Actions workflow are on the [`port/felucca-1.8-kontrol` branch](https://github.com/1bitfromdend/Felucca-KONTROL-MIDI/tree/port/felucca-1.8-kontrol). The changes are proposed in [draft PR #2](https://github.com/1bitfromdend/Felucca-KONTROL-MIDI/pull/2). The [successful build and host-test run #41229560226](https://github.com/1bitfromdend/Felucca-KONTROL-MIDI/actions/runs/41229560226) produced the **`felucca-1.8.0-kontrol`** artifact. Extract the ZIP to get **`felucca-1.8.0-kontrol.fwsc`** (GitHub may require sign-in; Actions artifacts expire).
+
+The port preserves the dedicated S-Series MK3 CH16 control mapping, adjusts to Felucca 1.8's routing and MIDI Learn, and passes the upstream host/UI regression suite. **A successful CI build does not mean it has been flashed or tested on the FM-1/S49 hardware.**
+
+For an initial **Windows** hardware test using the already-working Python 3.12 installer environment, put the extracted `.fwsc` and the [Felucca v1.8.0 installer script](https://raw.githubusercontent.com/hugelton/Felucca/v1.8.0/tools/fm1_install.py) in one directory, connect the FM-1 directly over USB, close other MIDI applications, then check identity before making any changes:
+
+```powershell
+py -3.12 fm1_install.py --info
+```
+
+Only after confirming the device identity and making backups, the separate *firmware-writing* command is:
+
+```powershell
+py -3.12 fm1_install.py felucca-1.8.0-kontrol.fwsc
+```
+
+**Stable / physically tested version remains Felucca 1.1.5.1 KONTROL EDITION**, described below and still the `main` source reference. Do not confuse its `felucca-1.1.5.1-s49.fwsc` file with the experimental 1.8 firmware.
+
+---
+
 Full MIDI remote-control patch for **Native Instruments Kontrol S-Series MK3 (S49 MK3 / S61 MK3 / S88 MK3) + M-VAVE FM-1 running Felucca 1.1.5.1**.
 
 The purpose of this build is to use a Kontrol S-Series MK3 keyboard as the main performance and editing surface for Felucca:
