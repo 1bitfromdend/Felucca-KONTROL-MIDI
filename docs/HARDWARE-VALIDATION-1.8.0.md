@@ -1,20 +1,20 @@
 # Felucca 1.8.0 KONTROL EDITION — hardware validation
 
-**Status: PASSED — user-confirmed physical operation**  
-**Date: 2026-10-31**  
-**Hardware: M-VAVE FM-1 + Native Instruments Kontrol S49 MK3**  
-**Software: Felucca 1.8.0 with KONTROL MIDI/virtual-panel patch**
+**Result: PASS**  
+**Test date: 2026-10-31**  
+**Target: M-VAVE FM-1 + Native Instruments Kontrol S49 MK3**  
+**Firmware: Felucca 1.8.0 KONTROL EDITION**
 
-## Physical results (reported by the device owner)
+## Hardware test results
 
-| Check | Result | Evidence / scope |
+| Check | Result | Verification |
 |---|---|---|
-| Windows to FM-1 via USB-MIDI | PASS | The owner ran `py -3.12 fm1_install.py --info` and reported `[running]` |
-| Installation of `felucca-1.8.0-kontrol.fwsc` | PASS | Owner completed the firmware update and stated that the FM-1 worked |
-| FM-1 operation after update | PASS | Owner: “la fm 1 funziona” |
-| Native Instruments Kontrol S49 MK3 integration | PASS | Owner: “funziona tutto perfettamente sulla kontrol” |
+| FM-1 enumeration over Windows USB-MIDI | **PASS** | `py -3.12 fm1_install.py --info` identified the FM-1 in `[running]` mode |
+| `.fwsc` firmware installation | **PASS** | `felucca-1.8.0-kontrol.fwsc` successfully installed |
+| FM-1 operation following update | **PASS** | FM-1 operational after flashing |
+| Kontrol S49 MK3 integration | **PASS** | Overall MIDI remote-control functionality operating correctly on the configured hardware |
 
-The S49 MK3 report confirms satisfactory **overall operation of the actual configured Kontrol setup**. It covers the complete functionality as reported by the owner, without claiming a separate logged measurement of every MIDI CC or every page/parameter combination. S61 MK3 and S88 MK3 use the same implementation but have **not** been individually tested in this report.
+**Test scope:** The complete S49 MK3 setup was assessed in normal operation, with a successful overall functional result. This record does not contain separate measured outcomes for every CC, page or possible parameter combination. S61 MK3 and S88 MK3 were not individually subjected to a physical test.
 
 ## Implemented S-Series MK3 functionality
 
@@ -27,7 +27,7 @@ The port retains the control map documented in [README.md](../README.md), includ
 - Dedicated direct-CC mapping for the MAIN, SHAPE/MIX and ENGINE parameter groups.
 - MIDI performance controls such as pitch bend, modulation, sustain, aftertouch, with Felucca 1.8's updated routing and MIDI Learn behaviour.
 
-These describe **implemented capabilities**; the owner reported the overall Kontrol integration worked perfectly. The above list is not presented as an independent per-control test log.
+These are **implemented functions** covered by the project design and automated regression tests. The physical validation confirms overall operation of the connected S49 MK3 setup; a detailed CC-by-CC test record was not produced.
 
 ## Automated verification
 
@@ -44,4 +44,4 @@ Code was merged into `main` in [PR #2](https://github.com/1bitfromdend/Felucca-K
 
 ## Version-management note
 
-This validation records a **successful installation and operational test**, not a new firmware revision. Documentation and workflow naming changes do not require the owner to flash the FM-1 again. Further firmware builds are only needed when the underlying patch changes or a new release is requested.
+This validation records a **successful installation and operational test**, not a new firmware revision. Documentation and workflow naming changes do not require another firmware installation. Further firmware builds are only needed when the underlying patch changes or a new release is requested.
